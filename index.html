@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0f766e" />
+  <title>CleanOps V8 — Device Mode Prototype</title>
+  <style>
+    :root{
+      --bg:#eef7f5;--card:#ffffff;--ink:#14312e;--muted:#5f7772;--brand:#0f766e;--brand2:#14b8a6;--soft:#dff4ef;--danger:#dc2626;--warn:#d97706;--ok:#15803d;--line:#d8ebe7;--shadow:0 18px 45px rgba(15,118,110,.15);--radius:22px;
+    }
+    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+    html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:linear-gradient(160deg,#e7f7f3 0%,#f8fbfa 58%,#dff4ef 100%);color:var(--ink);overscroll-behavior:none}
+    body.kiosk{user-select:none;touch-action:manipulation}
+    button,input,select,textarea{font:inherit}
+    .app{min-height:100dvh;display:flex;justify-content:center;padding:14px}
+    .phone{width:min(100%,470px);min-height:calc(100dvh - 28px);background:rgba(255,255,255,.72);border:1px solid rgba(15,118,110,.14);box-shadow:var(--shadow);border-radius:30px;overflow:hidden;display:flex;flex-direction:column;position:relative}
+    header{background:linear-gradient(135deg,var(--brand),#0b5e58);color:white;padding:18px 18px 14px;position:sticky;top:0;z-index:10}
+    .topbar{display:flex;align-items:center;justify-content:space-between;gap:10px}
+    .brand{display:flex;gap:10px;align-items:center}.logo{width:42px;height:42px;border-radius:16px;background:white;color:var(--brand);display:grid;place-items:center;font-weight:900;box-shadow:0 10px 22px rgba(0,0,0,.18)}
+    h1{font-size:18px;margin:0;line-height:1.05}.sub{font-size:12px;opacity:.86;margin-top:3px}.statusPills{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}.pill{font-size:11px;padding:6px 9px;border-radius:999px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.24);white-space:nowrap}.pill.ok{background:rgba(34,197,94,.22)}.pill.warn{background:rgba(245,158,11,.25)}
+    main{padding:16px;flex:1;overflow:auto}.screen{display:none;animation:fade .18s ease}.screen.active{display:block}@keyframes fade{from{opacity:.4;transform:translateY(4px)}to{opacity:1;transform:none}}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin-bottom:14px;box-shadow:0 8px 26px rgba(15,49,46,.06)}
+    .title{font-size:20px;font-weight:900;margin:0 0 5px}.hint{color:var(--muted);font-size:13px;line-height:1.45;margin:0 0 12px}.grid{display:grid;gap:10px}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+    .btn{border:0;border-radius:18px;padding:15px 14px;background:var(--brand);color:white;font-weight:800;min-height:54px;box-shadow:0 8px 16px rgba(15,118,110,.18);cursor:pointer}.btn:active{transform:scale(.985)}.btn.secondary{background:#eef7f5;color:var(--brand);border:1px solid var(--line);box-shadow:none}.btn.ghost{background:white;color:var(--ink);border:1px solid var(--line);box-shadow:none}.btn.warn{background:var(--warn)}.btn.danger{background:var(--danger)}.btn.ok{background:var(--ok)}.btn.small{min-height:40px;padding:9px 11px;border-radius:13px;font-size:13px}.btn.full{width:100%}.btn.selected{outline:3px solid rgba(20,184,166,.35);background:#0d9488;color:white}
+    input,select,textarea{width:100%;border:1px solid var(--line);border-radius:16px;background:white;padding:14px;color:var(--ink);outline:none}textarea{min-height:82px;resize:vertical}.label{font-size:12px;font-weight:800;color:var(--muted);margin:10px 0 6px}.bigNum{font-size:34px;font-weight:950;line-height:1}.muted{color:var(--muted)}
+    .roomList{display:grid;gap:9px}.room{display:flex;align-items:center;justify-content:space-between;gap:10px;border:1px solid var(--line);border-radius:18px;background:#fff;padding:13px}.room strong{font-size:15px}.badge{font-size:11px;font-weight:800;border-radius:999px;padding:5px 8px;background:var(--soft);color:var(--brand)}.badge.done{background:#dcfce7;color:#166534}.badge.issue{background:#fee2e2;color:#991b1b}.badge.task{background:#fef3c7;color:#92400e}
+    .bottomNav{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding:9px;background:rgba(255,255,255,.92);border-top:1px solid var(--line);position:sticky;bottom:0}.navbtn{background:transparent;border:0;border-radius:14px;padding:9px 4px;color:var(--muted);font-size:11px;font-weight:800}.navbtn.active{background:var(--soft);color:var(--brand)}.navicon{font-size:19px;display:block;margin-bottom:2px}
+    .qrBox{height:170px;border:2px dashed #8fd8cf;border-radius:24px;display:grid;place-items:center;text-align:center;background:linear-gradient(135deg,#f7fffd,#ecf8f6);margin-bottom:12px}.qrIcon{font-size:44px}.checkRow{display:grid;grid-template-columns:1fr 1fr;gap:8px}.check{border:1px solid var(--line);background:white;border-radius:16px;padding:12px;text-align:center;font-weight:800}.check.active{background:var(--soft);color:var(--brand);border-color:#99e5dc}.log{font-size:12px;background:#f8fbfa;border:1px solid var(--line);border-radius:14px;padding:10px;max-height:170px;overflow:auto;white-space:pre-wrap}.syncDot{width:10px;height:10px;border-radius:50%;background:var(--ok);display:inline-block;margin-right:6px}.syncDot.off{background:var(--warn)}.hidden{display:none!important}.footerNote{text-align:center;font-size:11px;color:var(--muted);padding:8px 0}.modal{position:absolute;inset:0;background:rgba(8,34,31,.62);display:none;place-items:center;padding:18px;z-index:50}.modal.show{display:grid}.modal .card{width:100%;max-width:390px;margin:0}.kioskRibbon{position:absolute;right:-38px;top:88px;background:#0f766e;color:white;font-size:10px;font-weight:900;letter-spacing:.08em;padding:7px 42px;transform:rotate(35deg);box-shadow:0 5px 14px rgba(0,0,0,.18);z-index:20}
+    @media(max-width:380px){.app{padding:0}.phone{border-radius:0;min-height:100dvh}.grid2,.checkRow{grid-template-columns:1fr}.title{font-size:18px}.btn{min-height:50px}.kioskRibbon{display:none}}
+    @media(min-width:760px){.phone{max-width:760px}.tabletGrid{display:grid;grid-template-columns:1.1fr .9fr;gap:14px}.bottomNav{grid-template-columns:repeat(4,120px);justify-content:center}.roomList{grid-template-columns:1fr 1fr}}
+    @media print{.bottomNav,.modal,.kioskRibbon{display:none}.phone{box-shadow:none;width:100%;border-radius:0}.app{padding:0}}
+  </style>
+</head>
+<body class="kiosk">
+<div class="app">
+  <div class="phone">
+    <div class="kioskRibbon">DEVICE MODE</div>
+    <header>
+      <div class="topbar">
+        <div class="brand"><div class="logo">CO</div><div><h1>CleanOps V8</h1><div class="sub">Device Mode Prototype · Karma Tara Residency</div></div></div>
+        <div class="statusPills"><span class="pill ok" id="netPill">Local WiFi</span><span class="pill" id="queuePill">0 queued</span></div>
+      </div>
+    </header>
+
+    <main>
+      <section id="login" class="screen active">
+        <div class="card">
+          <p class="title">Housekeeping Terminal</p>
+          <p class="hint">Single-purpose staff device view. Designed for kiosk/app pinning, quick shift login, offline work, and later local server sync.</p>
+          <div class="label">Staff</div>
+          <select id="staff"><option>Amar</option><option>Kul Bdr.</option><option>Raman</option><option>Sonam</option></select>
+          <div class="label">PIN</div>
+          <input id="pin" type="password" inputmode="numeric" maxlength="4" placeholder="Enter 4-digit PIN" />
+          <button class="btn full" onclick="login()">Start Shift</button>
+          <button class="btn secondary full" onclick="showAdmin()" style="margin-top:10px">Admin / Setup</button>
+        </div>
+        <div class="card">
+          <b>Device setup reminder</b>
+          <p class="hint" style="margin-top:8px">Use Android App Pinning or Fully Kiosk Browser. Hide browser controls, disable pull-down notifications, auto-open CleanOps, and require Admin PIN to exit.</p>
+        </div>
+      </section>
+
+      <section id="home" class="screen">
+        <div class="tabletGrid">
+          <div>
+            <div class="card">
+              <p class="title">Today’s Shift</p>
+              <p class="hint" id="shiftInfo">Staff shift active.</p>
+              <div class="grid3">
+                <div class="card" style="margin:0;text-align:center;padding:12px"><div class="bigNum" id="doneCount">0</div><div class="muted">Done</div></div>
+                <div class="card" style="margin:0;text-align:center;padding:12px"><div class="bigNum" id="issueCount">0</div><div class="muted">Issues</div></div>
+                <div class="card" style="margin:0;text-align:center;padding:12px"><div class="bigNum" id="taskCount">0</div><div class="muted">Tasks</div></div>
+              </div>
+            </div>
+            <div class="card">
+              <p class="title">Assigned Rooms</p>
+              <div class="roomList" id="roomList"></div>
+            </div>
+          </div>
+          <div class="card">
+            <p class="title">Fast Actions</p>
+            <div class="grid">
+              <button class="btn" onclick="go('scan')">📷 Scan Room QR</button>
+              <button class="btn secondary" onclick="quickRoomPrompt()">⌨️ Enter Room Manually</button>
+              <button class="btn secondary" onclick="go('sync')">🔄 Sync / Queue Status</button>
+              <button class="btn ghost" onclick="showAdmin()">🔐 Admin Exit / Settings</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="scan" class="screen">
+        <div class="card">
+          <p class="title">Room QR Scan</p>
+          <p class="hint">Prototype scan mode. In the next real build, camera QR scanning will open the selected room automatically.</p>
+          <div class="qrBox"><div><div class="qrIcon">▣</div><b>Point camera at room QR</b><br><span class="muted">Demo: choose a room below</span></div></div>
+          <div class="grid2" id="scanRooms"></div>
+        </div>
+      </section>
+
+      <section id="work" class="screen">
+        <div class="card">
+          <p class="title" id="workTitle">Room</p>
+          <p class="hint">Large-button housekeeping workflow for staff device use.</p>
+          <div class="label">Work Category</div>
+          <div class="grid3"><button class="btn secondary cat" onclick="setCategory('Suite')">Suite</button><button class="btn secondary cat" onclick="setCategory('Common')">Common</button><button class="btn secondary cat" onclick="setCategory('Maintenance')">Maintenance</button></div>
+          <div class="label">Status</div>
+          <div class="grid2"><button class="btn ok status" onclick="setStatus('Cleaned')">✅ Cleaned</button><button class="btn warn status" onclick="setStatus('Task')">🧹 Task</button><button class="btn danger status" onclick="setStatus('Issue')">⚠️ Issue</button><button class="btn secondary status" onclick="setStatus('Inspect')">👁 Inspect</button></div>
+          <div class="label">Checklist</div>
+          <div class="checkRow" id="checks"></div>
+          <div class="label">Note</div>
+          <textarea id="note" placeholder="Optional note, issue detail, or staff remark"></textarea>
+          <div class="grid2" style="margin-top:10px"><button class="btn secondary" onclick="fakePhoto()">📸 Add Photo Proof</button><button class="btn" onclick="saveEntry()">Save Entry</button></div>
+        </div>
+      </section>
+
+      <section id="sync" class="screen">
+        <div class="card">
+          <p class="title">Offline Queue & Sync</p>
+          <p class="hint"><span class="syncDot" id="dot"></span><span id="syncText">Connected to local WiFi mode.</span></p>
+          <div class="grid2"><button class="btn secondary" onclick="toggleNetwork()">Toggle WiFi Demo</button><button class="btn" onclick="syncNow()">Sync Now</button></div>
+        </div>
+        <div class="card">
+          <p class="title">Activity Log</p>
+          <div class="log" id="log"></div>
+        </div>
+      </section>
+
+      <section id="report" class="screen">
+        <div class="card">
+          <p class="title">Daily Report</p>
+          <p class="hint">Manager-friendly report generated from device entries.</p>
+          <div class="log" id="reportBox"></div>
+          <div class="grid2" style="margin-top:10px"><button class="btn secondary" onclick="buildReport()">Refresh</button><button class="btn" onclick="shareWhatsApp()">WhatsApp Report</button></div>
+        </div>
+      </section>
+    </main>
+
+    <nav class="bottomNav hidden" id="nav">
+      <button class="navbtn active" onclick="go('home')"><span class="navicon">🏠</span>Home</button>
+      <button class="navbtn" onclick="go('scan')"><span class="navicon">▣</span>Scan</button>
+      <button class="navbtn" onclick="go('sync')"><span class="navicon">🔄</span>Sync</button>
+      <button class="navbtn" onclick="go('report')"><span class="navicon">📋</span>Report</button>
+    </nav>
+
+    <div class="modal" id="adminModal">
+      <div class="card">
+        <p class="title">Admin / Device Exit</p>
+        <p class="hint">Admin PIN protects exit, settings, and kiosk/device setup.</p>
+        <input id="adminPin" type="password" inputmode="numeric" maxlength="4" placeholder="Admin PIN: 9999" />
+        <div class="grid2" style="margin-top:10px"><button class="btn secondary" onclick="closeAdmin()">Cancel</button><button class="btn" onclick="adminUnlock()">Unlock</button></div>
+        <div id="adminPanel" class="hidden" style="margin-top:12px">
+          <div class="grid">
+            <button class="btn secondary" onclick="alert('Use Fully Kiosk Browser: set Start URL, enable Fullscreen, Autostart, Kiosk Lockdown, and Exit PIN.')">Kiosk Setup Notes</button>
+            <button class="btn secondary" onclick="exportData()">Export Local Data</button>
+            <button class="btn danger" onclick="endShift()">End Shift / Logout</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+<script>
+const rooms=['Everest','Kanchenjunga','Lhotse','Makalu','Cho Oyu','Dhaulagiri','Manaslu','Annapurna','AmaDablam','Lobby','Staircase','Rooftop'];
+const checklist=['Bed Linen','Quilt Cover','Pillow Cover','Towels','Kitchen','Bathroom','Living Room','Overall Cleaned','Lights','TV','AC','Plumbing'];
+let state={staff:'',room:'',category:'Suite',status:'Cleaned',online:true,photo:false,entries:JSON.parse(localStorage.getItem('cleanops_v8_entries')||'[]')};
+function $(id){return document.getElementById(id)}
+function now(){return new Date().toLocaleString()}
+function saveLocal(){localStorage.setItem('cleanops_v8_entries',JSON.stringify(state.entries));updateCounts();renderLog();}
+function go(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));$(id).classList.add('active');document.querySelectorAll('.navbtn').forEach(b=>b.classList.remove('active'));[...document.querySelectorAll('.navbtn')].find(b=>b.textContent.toLowerCase().includes(id==='home'?'home':id==='scan'?'scan':id==='sync'?'sync':'report'))?.classList.add('active'); if(id==='report')buildReport();}
+function login(){let pin=$('pin').value.trim();if(pin.length<4){alert('Please enter 4-digit PIN for testing.');return}state.staff=$('staff').value;$('shiftInfo').textContent=`${state.staff} · Shift started ${now()}`;$('nav').classList.remove('hidden');renderRooms();renderScanRooms();go('home');}
+function renderRooms(){let html=rooms.map(r=>{let e=[...state.entries].reverse().find(x=>x.room===r);let cls=e?e.status==='Issue'?'issue':e.status==='Task'?'task':'done':'';let label=e?e.status:'Pending';return `<button class="room" onclick="openRoom('${r}')"><strong>${r}</strong><span class="badge ${cls}">${label}</span></button>`}).join('');$('roomList').innerHTML=html;}
+function renderScanRooms(){$('scanRooms').innerHTML=rooms.map(r=>`<button class="btn secondary" onclick="openRoom('${r}')">${r}</button>`).join('')}
+function quickRoomPrompt(){let r=prompt('Enter room/common area name:', 'Everest'); if(r)openRoom(r)}
+function openRoom(r){state.room=r;state.category='Suite';state.status='Cleaned';state.photo=false;$('workTitle').textContent=r;document.querySelectorAll('.cat,.status').forEach(b=>b.classList.remove('selected'));renderChecks();go('work');}
+function setCategory(c){state.category=c;document.querySelectorAll('.cat').forEach(b=>b.classList.toggle('selected',b.textContent.includes(c)));}
+function setStatus(s){state.status=s;document.querySelectorAll('.status').forEach(b=>b.classList.toggle('selected',b.textContent.includes(s)));}
+function renderChecks(){$('checks').innerHTML=checklist.map(c=>`<button class="check" onclick="this.classList.toggle('active')">${c}</button>`).join('')}
+function fakePhoto(){state.photo=true;alert('Photo proof marked for prototype. Real version will open camera.');}
+function saveEntry(){let checked=[...document.querySelectorAll('.check.active')].map(x=>x.textContent);let entry={id:Date.now(),time:now(),staff:state.staff,room:state.room,category:state.category,status:state.status,checks:checked,note:$('note').value.trim(),photo:state.photo,synced:state.online};state.entries.push(entry);$('note').value='';saveLocal();renderRooms();$('queuePill').textContent=`${state.entries.filter(e=>!e.synced).length} queued`;alert(state.online?'Entry saved and synced.':'Entry saved offline queue.');go('home');}
+function updateCounts(){let today=state.entries; $('doneCount').textContent=today.filter(e=>e.status==='Cleaned'||e.status==='Inspect').length; $('issueCount').textContent=today.filter(e=>e.status==='Issue').length; $('taskCount').textContent=today.filter(e=>e.status==='Task').length; $('queuePill').textContent=`${today.filter(e=>!e.synced).length} queued`;}
+function toggleNetwork(){state.online=!state.online;$('netPill').textContent=state.online?'Local WiFi':'Offline';$('netPill').className='pill '+(state.online?'ok':'warn');$('dot').className='syncDot '+(state.online?'':'off');$('syncText').textContent=state.online?'Connected to local WiFi mode.':'Offline mode: entries will queue on device.';}
+function syncNow(){if(!state.online){alert('Device is offline. Connect to local WiFi first.');return}state.entries=state.entries.map(e=>({...e,synced:true}));saveLocal();alert('All queued entries synced to local dashboard prototype.');}
+function renderLog(){let lines=state.entries.slice().reverse().map(e=>`${e.time} · ${e.staff} · ${e.room} · ${e.status}${e.synced?' · synced':' · queued'}${e.note?'\nNote: '+e.note:''}`).join('\n\n')||'No activity yet.';$('log').textContent=lines;}
+function buildReport(){let lines=['CLEANOPS DAILY REPORT','Karma Tara Residency',now(),''];state.entries.forEach(e=>lines.push(`${e.time} | ${e.staff} | ${e.room} | ${e.category} | ${e.status}${e.checks.length?' | '+e.checks.join(', '):''}${e.note?' | Note: '+e.note:''}${e.photo?' | Photo: Yes':''}`));$('reportBox').textContent=lines.join('\n')||'No report data.';}
+function shareWhatsApp(){buildReport();let text=encodeURIComponent($('reportBox').textContent);window.open(`https://wa.me/?text=${text}`,'_blank');}
+function showAdmin(){$('adminModal').classList.add('show');$('adminPin').focus();}
+function closeAdmin(){$('adminModal').classList.remove('show');$('adminPanel').classList.add('hidden');$('adminPin').value='';}
+function adminUnlock(){if($('adminPin').value==='9999'){$('adminPanel').classList.remove('hidden')}else alert('Wrong admin PIN. Demo PIN is 9999.');}
+function endShift(){if(confirm('End shift and return to login?')){closeAdmin();$('nav').classList.add('hidden');go('login');}}
+function exportData(){let blob=new Blob([JSON.stringify(state.entries,null,2)],{type:'application/json'});let a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='cleanops-v8-local-data.json';a.click();}
+window.addEventListener('load',()=>{updateCounts();renderLog();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')showAdmin();});
+</script>
+</body>
+</html>
