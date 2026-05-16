@@ -1,511 +1,103 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CleanOps V7.3.1.2.1 — Workflow Category Separation</title>
-<meta name="theme-color" content="#16824f">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1" />
+<meta name="theme-color" content="#0f7a45" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="CleanOps" />
+<link rel="manifest" href="manifest.json" />
+<link rel="icon" href="icons/icon-192.png" />
+<title>CleanOps V7 Device Edition — Real PWA Build</title>
 <style>
-:root{--green:#16824f;--dark:#0e653b;--soft:#f3faf6;--bg:#f5f8f6;--text:#17251e;--muted:#66746d;--line:#dfe9e3;--warn:#b54708;--danger:#b42318;--shadow:0 12px 28px rgba(24,45,34,.10)}
-*{box-sizing:border-box} body{margin:0;font-family:Arial,Helvetica,sans-serif;background:linear-gradient(180deg,#f8fbf8,#edf6f1);color:var(--text)}
-.hidden{display:none!important} button,input,select,textarea{font-family:inherit} button{cursor:pointer}
-.logo-img{width:100%;height:100%;object-fit:contain;display:block}
-.logo-box-login{width:190px;height:170px;margin:0 auto 8px}
-.logo-box-header{width:210px;height:180px;margin:0 auto}
-.login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:18px}
-.login-card{width:min(440px,94vw);background:#fff;border-radius:30px;padding:28px;box-shadow:var(--shadow);border:1px solid var(--line)}
-.center{text-align:center} h1,h2,h3{margin:0 0 8px} p{margin:5px 0} .small{font-size:13px;color:var(--muted)} label{display:block;margin:15px 0 7px;font-weight:800}
-select,input,textarea{width:100%;border:1px solid var(--line);border-radius:16px;padding:15px;background:#fff;font-size:16px;outline:none}
-input:focus,select:focus,textarea:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(22,130,79,.12)}
-.pin-row{display:grid;grid-template-columns:1fr auto;gap:10px} .icon-btn{width:54px;height:54px;border:1px solid var(--line);border-radius:16px;background:#f8fbf9;color:var(--green);font-weight:900;font-size:18px}
-.keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:12px} .key{border:1px solid var(--line);background:#fbfdfb;border-radius:16px;padding:15px 0;font-size:20px;font-weight:900;color:#183326} .key:active{background:var(--soft);transform:scale(.98)}
-.btn{border:0;border-radius:16px;padding:15px 16px;font-weight:900;background:var(--green);color:#fff;font-size:16px} .btn:hover{background:var(--dark)} .btn.full{width:100%} .btn.secondary{background:#eef6f1;color:var(--green)} .btn.warn{background:#fff4e8;color:var(--warn)} .btn.danger{background:#fff1f0;color:var(--danger)}
-.app{max-width:1120px;margin:0 auto;padding:14px}
-.header{background:#fff;border-radius:28px;box-shadow:var(--shadow);border:1px solid var(--line);padding:20px 24px;display:grid;grid-template-columns:245px 1fr 180px;gap:22px;align-items:center;min-height:210px}
-.brand{text-align:center} .brand h1{font-size:28px;margin-bottom:6px;line-height:1.18} .powered{color:var(--muted);font-weight:700;font-size:17px} .datetime{font-size:13px;color:var(--muted);margin-top:8px}
-.userbox{text-align:right} .user-pill{background:#e7f4e9;border-radius:14px;padding:13px;font-weight:900;text-align:center;margin-bottom:10px}
-.card{background:#fff;border-radius:24px;border:1px solid var(--line);box-shadow:var(--shadow);padding:22px;margin-top:14px}
-.tabs{display:flex;gap:8px;margin-top:14px} .tab{flex:1;border:1px solid var(--line);background:#fff;border-radius:16px;padding:14px;font-weight:900} .tab.active{background:var(--green);color:#fff;border-color:var(--green)}
-.segment{display:flex;gap:10px;margin:12px 0} .segment button{flex:1;border:1px solid var(--line);background:#fff;border-radius:16px;padding:14px;font-weight:900} .segment button.active{background:var(--green);color:#fff;border-color:var(--green)}
-.status-row{display:grid;grid-template-columns:repeat(2,1fr);gap:10px} .status{border:2px solid var(--line);border-radius:16px;padding:14px;text-align:center;font-weight:900;background:#fff} .status.on{border-color:var(--green);background:var(--soft);color:var(--green)}
-.details-box{border:1px solid var(--line);border-radius:18px;background:#fff;overflow:hidden;margin-top:12px} .details-head{width:100%;border:0;background:#f8fbf9;padding:15px;display:flex;align-items:center;justify-content:space-between;font-weight:900;color:var(--text)} .count{background:var(--soft);color:var(--green);border-radius:999px;padding:5px 9px;font-size:12px}
-.details-body{padding:14px;border-top:1px solid var(--line)} .checks{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px} .check{border:2px solid var(--line);background:#fff;border-radius:15px;padding:12px;text-align:center;font-weight:900} .check.on{border-color:var(--green);background:var(--soft);color:var(--green)}
-.dashboard-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-top:14px} .metric{border:1px solid var(--line);border-radius:18px;background:#fbfdfb;padding:16px} .metric strong{display:block;font-size:28px;color:var(--green);margin-top:4px}
-.entry{border:1px solid var(--line);border-left:6px solid var(--green);border-radius:18px;padding:14px;margin:10px 0;background:#fff} .entry.issue{border-left-color:var(--warn)} .entry-title{font-size:17px;font-weight:900} .badge{display:inline-block;padding:6px 9px;border-radius:999px;background:var(--soft);color:var(--green);font-size:12px;font-weight:900;margin:4px 4px 0 0} .badge.issue{background:#fff4e8;color:var(--warn)}
-.staff-list{display:grid;gap:10px;margin-top:12px} .staff-card{border:1px solid var(--line);border-radius:16px;padding:13px;background:#fbfdfb;display:flex;justify-content:space-between;gap:12px;align-items:center} .pin-badge{background:#eef6f1;color:#145c39;border-radius:999px;padding:7px 10px;font-weight:900;font-size:13px}
-.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#133b29;color:#fff;padding:13px 18px;border-radius:999px;font-weight:900;box-shadow:var(--shadow);display:none;z-index:99}
-.footer{text-align:center;color:var(--muted);font-size:13px;padding:18px}
-@media(max-width:760px){.login-card{padding:22px;border-radius:26px}.logo-box-login{width:170px;height:155px}.header{grid-template-columns:1fr;text-align:center;padding:20px 18px;gap:10px;min-height:auto}.logo-box-header{width:185px;height:165px}.userbox{text-align:center}.tabs{overflow:auto}.tab{min-width:120px}.status-row{grid-template-columns:1fr}}
-
-.setup-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.setup-list{display:grid;gap:10px;margin-top:12px}
-.setup-card{border:1px solid var(--line);border-radius:16px;padding:13px;background:#fbfdfb;display:flex;justify-content:space-between;gap:12px;align-items:center}
-.add-row{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:end}
-.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-.btn.smallbtn{padding:9px 11px;font-size:13px;border-radius:12px}
-@media(max-width:760px){.setup-grid,.add-row{grid-template-columns:1fr}}
-
-
-.photo-preview{margin-top:10px;max-width:230px;border-radius:14px;border:1px solid var(--line);display:block}
-.photo-row{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center}
-.photo-label{border:1px solid var(--line);background:#fbfdfb;border-radius:16px;padding:15px;font-weight:900;text-align:center;color:var(--green)}
-.file-input{display:none}
-.btn.smallbtn{padding:9px 11px;font-size:13px;border-radius:12px}
-@media print{.tabs,.btn,.keypad,.login-wrap{display:none!important}.card,.header{box-shadow:none}body{background:#fff}}
+:root{--green:#12804d;--green2:#0d633b;--soft:#eef8f2;--bg:#f4f8f5;--card:#fff;--text:#102018;--muted:#607168;--line:#dce7e1;--warn:#c05621;--danger:#b42318;--shadow:0 8px 20px rgba(19,54,35,.08);--radius:18px}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;min-height:100%;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text);overscroll-behavior:none}body{font-size:14px}.hidden{display:none!important}button,input,select,textarea{font-family:inherit;font-size:15px}button{cursor:pointer}h1,h2,h3,p{margin:0}.small{font-size:12px;color:var(--muted);line-height:1.25}.tiny{font-size:11px;color:var(--muted)}
+.logo{display:flex;align-items:center;gap:8px}.logo svg{width:38px;height:34px;flex:0 0 auto}.logo strong{font-size:17px;color:#0a5f38}.logo span{display:block;font-size:10px;color:var(--muted);font-weight:700;margin-top:-1px}
+.login{min-height:100svh;display:flex;align-items:center;justify-content:center;padding:12px}.login-card{width:min(390px,94vw);background:#fff;border:1px solid var(--line);border-radius:24px;padding:18px;box-shadow:var(--shadow)}.login-logo{display:flex;justify-content:center;margin-bottom:8px}.login-logo svg{width:96px;height:84px}.center{text-align:center}.login h1{font-size:23px;margin-bottom:3px}label{display:block;font-size:13px;font-weight:800;margin:11px 0 5px}select,input,textarea{width:100%;border:1px solid var(--line);border-radius:13px;padding:11px;background:#fff;color:var(--text);outline:none}input:focus,select:focus,textarea:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(18,128,77,.11)}.pin-row{display:grid;grid-template-columns:1fr 44px;gap:8px}.icon-btn{height:44px;border:1px solid var(--line);border-radius:13px;background:#f8fbf9;color:var(--green);font-weight:900}.keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:9px}.key{border:1px solid var(--line);background:#fbfdfb;border-radius:13px;padding:10px 0;font-size:17px;font-weight:900;color:#183326}.key:active,.btn:active,.tab:active,.check:active,.status:active{transform:scale(.985)}
+.btn{border:0;border-radius:13px;padding:12px 13px;font-weight:900;background:var(--green);color:#fff}.btn.full{width:100%}.btn.secondary{background:#eaf5ef;color:var(--green)}.btn.warn{background:#fff2e8;color:var(--warn)}.btn.danger{background:#fff1f0;color:var(--danger)}.btn.smallbtn{padding:8px 10px;font-size:12px;border-radius:10px}.app{max-width:700px;margin:0 auto;padding:10px 10px 74px}.topbar{position:sticky;top:0;z-index:20;margin:-10px -10px 10px;padding:8px 10px calc(8px + env(safe-area-inset-top));background:linear-gradient(135deg,#0b6b3c,#12804d);color:#fff;box-shadow:0 5px 18px rgba(13,99,59,.20)}.topbar-inner{display:flex;align-items:center;justify-content:space-between;gap:10px;max-width:700px;margin:0 auto}.topbar .logo strong{color:#fff}.topbar .logo span{color:rgba(255,255,255,.76)}.topbar .logo svg{filter:drop-shadow(0 2px 4px rgba(0,0,0,.12))}.top-actions{display:flex;align-items:center;gap:7px}.mini-pill{border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.12);border-radius:999px;padding:7px 9px;color:#fff;font-weight:900;font-size:12px}.card{background:var(--card);border:1px solid var(--line);box-shadow:var(--shadow);border-radius:var(--radius);padding:14px;margin:10px 0}.property-card{text-align:center;padding:12px}.property-card h1{font-size:21px;line-height:1.15}.user-row{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:10px;background:var(--soft);border-radius:14px;padding:10px 12px}.user-row strong{font-size:15px}.tabs{display:flex;gap:7px;margin:10px 0;overflow-x:auto}.tab{border:1px solid var(--line);background:#fff;border-radius:13px;padding:11px 12px;font-weight:900;color:var(--text);white-space:nowrap}.tab.active{background:var(--green);color:#fff;border-color:var(--green)}.section-title{font-size:20px;margin-bottom:4px}.segment{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:11px 0}.segment button{border:1px solid var(--line);background:#fff;border-radius:13px;padding:11px;font-weight:900}.segment button.active{background:var(--green);color:#fff;border-color:var(--green)}.status-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}.status{border:2px solid var(--line);border-radius:15px;background:#fff;padding:15px 10px;text-align:center;font-weight:900;min-height:76px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px}.status .ico{font-size:23px}.status.on{border-color:var(--green);background:var(--soft);color:var(--green)}.status.issue.on{border-color:var(--warn);background:#fff6ed;color:var(--warn)}.details-box{border:1px solid var(--line);border-radius:15px;background:#fff;overflow:hidden;margin-top:10px}.details-head{width:100%;border:0;background:#f8fbf9;padding:12px;display:flex;align-items:center;justify-content:space-between;font-weight:900;color:var(--text)}.count{background:var(--soft);color:var(--green);border-radius:999px;padding:4px 8px;font-size:11px}.details-body{padding:10px;border-top:1px solid var(--line)}.checks{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}.check{border:2px solid var(--line);background:#fff;border-radius:12px;padding:10px 7px;text-align:center;font-weight:900;font-size:13px;min-height:44px}.check.on{border-color:var(--green);background:var(--soft);color:var(--green)}.check.issue.on{border-color:var(--warn);background:#fff6ed;color:var(--warn)}.photo-row{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center}.photo-label{border:1px solid var(--line);background:#fbfdfb;border-radius:13px;padding:11px;font-weight:900;text-align:center;color:var(--green)}.file-input{display:none}.photo-preview{margin-top:8px;max-width:170px;border-radius:12px;border:1px solid var(--line);display:block}.dashboard-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}.metric{border:1px solid var(--line);border-radius:15px;background:#fbfdfb;padding:11px;text-align:center}.metric strong{display:block;font-size:23px;color:var(--green);margin-top:2px}.entry{border:1px solid var(--line);border-left:5px solid var(--green);border-radius:15px;padding:11px;margin:8px 0;background:#fff}.entry.issue{border-left-color:var(--warn)}.entry-title{font-size:15px;font-weight:900}.badge{display:inline-block;padding:5px 8px;border-radius:999px;background:var(--soft);color:var(--green);font-size:11px;font-weight:900;margin:4px 4px 0 0}.badge.issue{background:#fff4e8;color:var(--warn)}.row{display:flex;gap:7px;flex-wrap:wrap;align-items:center}.setup-grid{display:grid;grid-template-columns:1fr;gap:10px}.add-row{display:grid;grid-template-columns:1fr auto;gap:7px;align-items:end}.setup-list,.staff-list{display:grid;gap:7px;margin-top:8px}.setup-card,.staff-card{border:1px solid var(--line);border-radius:13px;padding:10px;background:#fbfdfb;display:flex;justify-content:space-between;gap:8px;align-items:center}.pin-badge{background:#eef6f1;color:#145c39;border-radius:999px;padding:6px 9px;font-weight:900;font-size:12px}.bottom-nav{position:fixed;left:0;right:0;bottom:0;z-index:30;background:rgba(255,255,255,.96);backdrop-filter:blur(10px);border-top:1px solid var(--line);padding:7px 8px calc(7px + env(safe-area-inset-bottom));display:flex;justify-content:center}.bottom-inner{width:min(700px,100%);display:grid;grid-template-columns:repeat(4,1fr);gap:5px}.navbtn{border:0;background:transparent;border-radius:14px;padding:7px 4px;color:var(--muted);font-weight:900;font-size:11px}.navbtn span{display:block;font-size:18px;line-height:18px;margin-bottom:2px}.navbtn.active{background:var(--soft);color:var(--green)}.toast{position:fixed;left:50%;bottom:82px;transform:translateX(-50%);background:#133b29;color:#fff;padding:12px 16px;border-radius:999px;font-weight:900;box-shadow:var(--shadow);display:none;z-index:99;max-width:92vw;text-align:center}.footer{text-align:center;color:var(--muted);font-size:11px;padding:6px 0}.install-tip{display:none;background:#fffbe8;border:1px solid #f4d77c;color:#744b00;border-radius:13px;padding:10px;margin:10px 0;font-size:12px;font-weight:700}.install-tip.show{display:block}
+@media(max-width:390px){body{font-size:13px}.app{padding:8px 8px 72px}.topbar{margin:-8px -8px 8px;padding:7px 8px}.card{padding:12px;border-radius:16px;margin:8px 0}.property-card h1{font-size:19px}.section-title{font-size:18px}.login-card{padding:15px}.login-logo svg{width:84px;height:74px}.checks{grid-template-columns:1fr 1fr}.btn,select,input,textarea{font-size:14px}.status{min-height:68px;padding:12px 8px}.dashboard-grid{gap:6px}.metric{padding:9px 5px}.metric strong{font-size:20px}.logo svg{width:34px;height:30px}}
+@media(min-width:760px){.setup-grid{grid-template-columns:1fr 1fr}.app{padding-top:14px}.card{padding:16px}.bottom-nav{display:none}.app{padding-bottom:20px}.tabs{display:flex!important}}
+@media print{.topbar,.tabs,.bottom-nav,.btn,.keypad,.login{display:none!important}.card{box-shadow:none}body{background:#fff}.app{padding:0}}
 </style>
 </head>
 <body>
-
-<section id="loginScreen" class="login-wrap">
-<div class="login-card">
-<div class="logo-box-login"><img class="logo-img" src="data:image/svg+xml;charset=UTF-8,%3Csvg%20viewBox%3D%220%200%20280%20245%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20aria-label%3D%22CleanOps%20Logo%22%3E%0A%3Cdefs%3E%0A%3ClinearGradient%20id%3D%22g1%22%20x1%3D%220%22%20x2%3D%221%22%20y1%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%236fbe44%22/%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%230d7a4a%22/%3E%3C/linearGradient%3E%0A%3ClinearGradient%20id%3D%22g2%22%20x1%3D%220%22%20x2%3D%221%22%20y1%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%2316a05d%22/%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%232b76b9%22/%3E%3C/linearGradient%3E%0A%3C/defs%3E%0A%3Cpath%20d%3D%22M55%2098%20L138%2035%20L225%2098%22%20fill%3D%22none%22%20stroke%3D%22url%28%23g1%29%22%20stroke-width%3D%2215%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22/%3E%0A%3Cpath%20d%3D%22M74%20100%20V168%20H118%20V122%20H158%20V168%20H204%20V100%22%20fill%3D%22none%22%20stroke%3D%22%230e7848%22%20stroke-width%3D%2213%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22/%3E%0A%3Cpath%20d%3D%22M95%20107%20L137%20151%20L211%2062%22%20fill%3D%22none%22%20stroke%3D%22url%28%23g2%29%22%20stroke-width%3D%2222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22/%3E%0A%3Crect%20x%3D%22139%22%20y%3D%2276%22%20width%3D%2213%22%20height%3D%2213%22%20fill%3D%22%230e7848%22/%3E%3Crect%20x%3D%22156%22%20y%3D%2276%22%20width%3D%2213%22%20height%3D%2213%22%20fill%3D%22%230e7848%22/%3E%3Crect%20x%3D%22139%22%20y%3D%2293%22%20width%3D%2213%22%20height%3D%2213%22%20fill%3D%22%230e7848%22/%3E%3Crect%20x%3D%22156%22%20y%3D%2293%22%20width%3D%2213%22%20height%3D%2213%22%20fill%3D%22%230e7848%22/%3E%0A%3Cpath%20d%3D%22M91%2030%20l5%2013%2013%205-13%205-5%2013-5-13-13-5%2013-5z%22%20fill%3D%22%23f6d23f%22/%3E%3Cpath%20d%3D%22M211%2020%20l4%2010%2010%204-10%204-4%2010-4-10-10-4%2010-4z%22%20fill%3D%22%23f6d23f%22/%3E%0A%3Ctext%20x%3D%22140%22%20y%3D%22213%22%20text-anchor%3D%22middle%22%20font-size%3D%2247%22%20font-weight%3D%22800%22%20font-family%3D%22Arial%22%3E%3Ctspan%20fill%3D%22%230e7848%22%3EClean%3C/tspan%3E%3Ctspan%20fill%3D%22%232b76b9%22%3EOps%3C/tspan%3E%3C/text%3E%0A%3Ctext%20x%3D%22140%22%20y%3D%22238%22%20text-anchor%3D%22middle%22%20font-size%3D%2216%22%20font-weight%3D%22700%22%20fill%3D%22%235e6e66%22%20font-family%3D%22Arial%22%3EHospitality%20Management%3C/text%3E%0A%3C/svg%3E" alt="CleanOps logo"></div>
-<div class="center"><h1>CleanOps Login</h1><p class="small">Hospitality Management · Daily Operations</p></div>
-<label>Staff Name</label><select id="loginUser"></select>
-<label>PIN</label><div class="pin-row"><input id="pin" type="password" inputmode="numeric" maxlength="4" placeholder="Enter PIN" autocomplete="off"><button class="icon-btn" onclick="clearPin()">⌫</button></div>
-<div class="keypad">
-<button class="key" onclick="tapPin('1')">1</button><button class="key" onclick="tapPin('2')">2</button><button class="key" onclick="tapPin('3')">3</button>
-<button class="key" onclick="tapPin('4')">4</button><button class="key" onclick="tapPin('5')">5</button><button class="key" onclick="tapPin('6')">6</button>
-<button class="key" onclick="tapPin('7')">7</button><button class="key" onclick="tapPin('8')">8</button><button class="key" onclick="tapPin('9')">9</button>
-<button class="key" onclick="backspacePin()">←</button><button class="key" onclick="tapPin('0')">0</button><button class="key" onclick="login()">✓</button>
-</div>
-<button class="btn full" style="margin-top:14px" onclick="login()">Login</button>
-</div>
+<section id="loginScreen" class="login">
+  <div class="login-card">
+    <div class="login-logo" id="loginLogo"></div>
+    <div class="center"><h1>CleanOps Login</h1><p class="small">Hospitality Management · Daily Operations</p></div>
+    <label>Staff Name</label><select id="loginUser"></select>
+    <label>PIN</label><div class="pin-row"><input id="pin" type="password" inputmode="numeric" maxlength="4" placeholder="Enter PIN" autocomplete="off"><button class="icon-btn" onclick="clearPin()">⌫</button></div>
+    <div class="keypad">
+      <button class="key" onclick="tapPin('1')">1</button><button class="key" onclick="tapPin('2')">2</button><button class="key" onclick="tapPin('3')">3</button>
+      <button class="key" onclick="tapPin('4')">4</button><button class="key" onclick="tapPin('5')">5</button><button class="key" onclick="tapPin('6')">6</button>
+      <button class="key" onclick="tapPin('7')">7</button><button class="key" onclick="tapPin('8')">8</button><button class="key" onclick="tapPin('9')">9</button>
+      <button class="key" onclick="backspacePin()">←</button><button class="key" onclick="tapPin('0')">0</button><button class="key" onclick="login()">✓</button>
+    </div>
+    <button class="btn full" style="margin-top:10px" onclick="login()">Login</button>
+  </div>
 </section>
-
 <main id="app" class="app hidden">
-<header class="header">
-<div class="logo-box-header"><img class="logo-img" src="data:image/svg+xml;charset=UTF-8,%3Csvg%20viewBox%3D%220%200%20280%20245%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20aria-label%3D%22CleanOps%20Logo%22%3E%0A%3Cdefs%3E%0A%3ClinearGradient%20id%3D%22g1%22%20x1%3D%220%22%20x2%3D%221%22%20y1%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%236fbe44%22/%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%230d7a4a%22/%3E%3C/linearGradient%3E%0A%3ClinearGradient%20id%3D%22g2%22%20x1%3D%220%22%20x2%3D%221%22%20y1%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%2316a05d%22/%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%232b76b9%22/%3E%3C/linearGradient%3E%0A%3C/defs%3E%0A%3Cpath%20d%3D%22M55%2098%20L138%2035%20L225%2098%22%20fill%3D%22none%22%20stroke%3D%22url%28%23g1%29%22%20stroke-width%3D%2215%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22/%3E%0A%3Cpath%20d%3D%22M74%20100%20V168%20H118%20V122%20H158%20V168%20H204%20V100%22%20fill%3D%22none%22%20stroke%3D%22%230e7848%22%20stroke-width%3D%2213%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22/%3E%0A%3Cpath%20d%3D%22M95%20107%20L137%20151%20L211%2062%22%20fill%3D%22none%22%20stroke%3D%22url%28%23g2%29%22%20stroke-width%3D%2222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22/%3E%0A%3Crect%20x%3D%22139%22%20y%3D%2276%22%20width%3D%2213%22%20height%3D%2213%22%20fill%3D%22%230e7848%22/%3E%3Crect%20x%3D%22156%22%20y%3D%2276%22%20width%3D%2213%22%20height%3D%2213%22%20fill%3D%22%230e7848%22/%3E%3Crect%20x%3D%22139%22%20y%3D%2293%22%20width%3D%2213%22%20height%3D%2213%22%20fill%3D%22%230e7848%22/%3E%3Crect%20x%3D%22156%22%20y%3D%2293%22%20width%3D%2213%22%20height%3D%2213%22%20fill%3D%22%230e7848%22/%3E%0A%3Cpath%20d%3D%22M91%2030%20l5%2013%2013%205-13%205-5%2013-5-13-13-5%2013-5z%22%20fill%3D%22%23f6d23f%22/%3E%3Cpath%20d%3D%22M211%2020%20l4%2010%2010%204-10%204-4%2010-4-10-10-4%2010-4z%22%20fill%3D%22%23f6d23f%22/%3E%0A%3Ctext%20x%3D%22140%22%20y%3D%22213%22%20text-anchor%3D%22middle%22%20font-size%3D%2247%22%20font-weight%3D%22800%22%20font-family%3D%22Arial%22%3E%3Ctspan%20fill%3D%22%230e7848%22%3EClean%3C/tspan%3E%3Ctspan%20fill%3D%22%232b76b9%22%3EOps%3C/tspan%3E%3C/text%3E%0A%3Ctext%20x%3D%22140%22%20y%3D%22238%22%20text-anchor%3D%22middle%22%20font-size%3D%2216%22%20font-weight%3D%22700%22%20fill%3D%22%235e6e66%22%20font-family%3D%22Arial%22%3EHospitality%20Management%3C/text%3E%0A%3C/svg%3E" alt="CleanOps logo"></div>
-<div class="brand"><h1>Karma Tara Residency</h1><div class="powered">Powered by CleanOps</div><div id="dateTime" class="datetime"></div></div>
-<div class="userbox"><div id="userPill" class="user-pill"></div><button class="btn secondary full" onclick="logout()">Logout</button></div>
-</header>
-<nav id="tabs" class="tabs"></nav>
-<section id="content"></section>
-<div class="footer">🏠 Karma Tara Residency · Powered by CleanOps · V7.3.1.2</div>
+  <div class="topbar"><div class="topbar-inner"><div class="logo" id="topLogo"></div><div class="top-actions"><button class="mini-pill" onclick="attemptFullscreen()">⛶</button><button class="mini-pill" onclick="logout()">Logout</button></div></div></div>
+  <div id="installTip" class="install-tip">For full app mode: Chrome menu ⋮ → Install app. If the browser bar remains, use Fully Kiosk Browser later.</div>
+  <section class="card property-card"><h1>Karma Tara Residency</h1><p class="small">Powered by CleanOps</p><p id="dateTime" class="tiny" style="margin-top:4px"></p><div class="user-row"><div><strong id="userPill"></strong><div class="tiny">Device Mode · PWA Ready</div></div><button class="btn secondary smallbtn" onclick="logout()">Exit</button></div></section>
+  <nav id="tabs" class="tabs"></nav>
+  <section id="content"></section>
+  <div class="footer">🏠 Karma Tara Residency · Powered by CleanOps · V7 Device Edition</div>
 </main>
+<nav id="bottomNav" class="bottom-nav hidden"><div id="bottomInner" class="bottom-inner"></div></nav>
 <div id="toast" class="toast"></div>
-
 <script>
-const defaultUsers=[
-  {name:"Sonam",role:"Admin",pin:"1234"},
-  {name:"Amar",role:"Staff",pin:"1111"},
-  {name:"Kul Bdr.",role:"Staff",pin:"2222"},
-  {name:"Raman",role:"Supervisor",pin:"3333"}
-];
-let users=JSON.parse(localStorage.getItem("cleanops_v7312_users")||JSON.stringify(defaultUsers));
+const logoSvg=`<svg viewBox="0 0 280 245" xmlns="http://www.w3.org/2000/svg" aria-label="CleanOps Logo"><defs><linearGradient id="g1" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#6fbe44"/><stop offset="1" stop-color="#0d7a4a"/></linearGradient><linearGradient id="g2" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#16a05d"/><stop offset="1" stop-color="#2b76b9"/></linearGradient></defs><path d="M55 98 L138 35 L225 98" fill="none" stroke="url(#g1)" stroke-width="15" stroke-linecap="round" stroke-linejoin="round"/><path d="M74 100 V168 H118 V122 H158 V168 H204 V100" fill="none" stroke="#0e7848" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"/><path d="M95 107 L137 151 L211 62" fill="none" stroke="url(#g2)" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/><rect x="139" y="76" width="13" height="13" fill="#0e7848"/><rect x="156" y="76" width="13" height="13" fill="#0e7848"/><rect x="139" y="93" width="13" height="13" fill="#0e7848"/><rect x="156" y="93" width="13" height="13" fill="#0e7848"/><path d="M91 30 l5 13 13 5-13 5-5 13-5-13-13-5 13-5z" fill="#f6d23f"/><path d="M211 20 l4 10 10 4-10 4-4 10-4-10-10-4 10-4z" fill="#f6d23f"/></svg>`;
+loginLogo.innerHTML=logoSvg;topLogo.innerHTML=logoSvg+`<div><strong>CleanOps</strong><span>Hospitality Management</span></div>`;
+const defaultUsers=[{name:"Sonam",role:"Admin",pin:"1234"},{name:"Amar",role:"Staff",pin:"1111"},{name:"Kul Bdr.",role:"Staff",pin:"2222"},{name:"Raman",role:"Supervisor",pin:"3333"}];
+let users=JSON.parse(localStorage.getItem("cleanops_v7device_users")||JSON.stringify(defaultUsers));
 const defaultRooms=["Everest","Kanchenjunga","Lhotse","Makalu","Cho Oyu","Dhaulagiri","Manaslu","Annapurna","AmaDablam"];
-let rooms=JSON.parse(localStorage.getItem("cleanops_v7312_rooms")||JSON.stringify(defaultRooms));
+let rooms=JSON.parse(localStorage.getItem("cleanops_v7device_rooms")||JSON.stringify(defaultRooms));
 const defaultAreas=["Lobby","Reception","Rooftop","Stairway","Parking","Terrace","Common Bathroom"];
-let areas=JSON.parse(localStorage.getItem("cleanops_v7312_areas")||JSON.stringify(defaultAreas));
+let areas=JSON.parse(localStorage.getItem("cleanops_v7device_areas")||JSON.stringify(defaultAreas));
 const defaultSuiteTasks=["Change Bed Linen","Change Quilt Cover","Change Pillow Cover","Change Towels","Clean Kitchen","Clean Bathroom","Clean Living Room","Overall Cleaned"];
 const defaultSuiteIssues=["Lights","TV","AC","Plumbing","Kitchen","Bathroom","Furniture","Other"];
 const defaultAreaTasks=["Lobby Cleaning","Reception Cleaning","Rooftop Cleaning","Stairway Cleaning","Parking Cleaning","Terrace Cleaning","Garbage Collection"];
 const defaultAreaIssues=["Lighting","Water Leakage","Furniture Damage","Waste Overflow","Floor Damage","Safety Hazard","Other"];
-let suiteTasks=JSON.parse(localStorage.getItem("cleanops_v7312_suite_tasks")||JSON.stringify(defaultSuiteTasks));
-let suiteIssues=JSON.parse(localStorage.getItem("cleanops_v7312_suite_issues")||JSON.stringify(defaultSuiteIssues));
-let areaTasks=JSON.parse(localStorage.getItem("cleanops_v7312_area_tasks")||JSON.stringify(defaultAreaTasks));
-let areaIssues=JSON.parse(localStorage.getItem("cleanops_v7312_area_issues")||JSON.stringify(defaultAreaIssues));
-let entries=JSON.parse(localStorage.getItem("cleanops_v7312_entries")||"[]");
-let currentUser=null,currentView="work",entryType="Suite Room";
-let selectedMode=null,selectedStatus=[],selectedTask=[],selectedIssues=[],dropdownOpen=null;
-
-function saveEntries(){
- localStorage.setItem("cleanops_v7312_entries",JSON.stringify(entries));
- localStorage.setItem("cleanops_v7312_rooms",JSON.stringify(rooms));
- localStorage.setItem("cleanops_v7312_areas",JSON.stringify(areas));
- localStorage.setItem("cleanops_v7312_users",JSON.stringify(users));
- localStorage.setItem("cleanops_v7312_suite_tasks",JSON.stringify(suiteTasks));
- localStorage.setItem("cleanops_v7312_suite_issues",JSON.stringify(suiteIssues));
- localStorage.setItem("cleanops_v7312_area_tasks",JSON.stringify(areaTasks));
- localStorage.setItem("cleanops_v7312_area_issues",JSON.stringify(areaIssues));
-}
+let suiteTasks=JSON.parse(localStorage.getItem("cleanops_v7device_suite_tasks")||JSON.stringify(defaultSuiteTasks));
+let suiteIssues=JSON.parse(localStorage.getItem("cleanops_v7device_suite_issues")||JSON.stringify(defaultSuiteIssues));
+let areaTasks=JSON.parse(localStorage.getItem("cleanops_v7device_area_tasks")||JSON.stringify(defaultAreaTasks));
+let areaIssues=JSON.parse(localStorage.getItem("cleanops_v7device_area_issues")||JSON.stringify(defaultAreaIssues));
+let entries=JSON.parse(localStorage.getItem("cleanops_v7device_entries")||"[]");
+let currentUser=null,currentView="work",entryType="Suite Room",selectedMode=null,selectedTask=[],selectedIssues=[],dropdownOpen=null;
+function saveAll(){localStorage.setItem("cleanops_v7device_entries",JSON.stringify(entries));localStorage.setItem("cleanops_v7device_rooms",JSON.stringify(rooms));localStorage.setItem("cleanops_v7device_areas",JSON.stringify(areas));localStorage.setItem("cleanops_v7device_users",JSON.stringify(users));localStorage.setItem("cleanops_v7device_suite_tasks",JSON.stringify(suiteTasks));localStorage.setItem("cleanops_v7device_suite_issues",JSON.stringify(suiteIssues));localStorage.setItem("cleanops_v7device_area_tasks",JSON.stringify(areaTasks));localStorage.setItem("cleanops_v7device_area_issues",JSON.stringify(areaIssues));}
+function showToast(m){toast.textContent=m;toast.style.display="block";setTimeout(()=>toast.style.display="none",1900)}
 function fillUsers(){loginUser.innerHTML=users.map((u,i)=>`<option value="${i}">${u.name} — ${u.role}</option>`).join("")}
-function showToast(m){toast.textContent=m;toast.style.display="block";setTimeout(()=>toast.style.display="none",1800)}
-function tapPin(n){if(pin.value.length<4)pin.value+=n}
-function backspacePin(){pin.value=pin.value.slice(0,-1)}
-function clearPin(){pin.value=""}
-function login(){const u=users[loginUser.value];if(!u||pin.value!==u.pin){showToast("Incorrect PIN");return}currentUser=u;sessionStorage.setItem("cleanops_v7312_user",JSON.stringify(u));pin.value="";startApp()}
-function logout(){sessionStorage.removeItem("cleanops_v7312_user");currentUser=null;app.classList.add("hidden");loginScreen.classList.remove("hidden")}
-function startApp(){loginScreen.classList.add("hidden");app.classList.remove("hidden");userPill.textContent=`${currentUser.name} — ${currentUser.role}`;currentView=currentUser.role==="Staff"?"work":"dashboard";tick();renderTabs();renderContent()}
-function tick(){if(document.getElementById("dateTime")) dateTime.textContent=new Date().toLocaleDateString()+" | "+new Date().toLocaleTimeString()}
-setInterval(tick,1000);
-function todayEntries(){const d=new Date().toDateString();return entries.filter(e=>new Date(e.time).toDateString()===d)}
-function hasIssue(e){return e.status.includes("Issue")||e.issues.length>0}
-function renderTabs(){
- if(currentUser.role==="Staff"){tabs.innerHTML="";tabs.classList.add("hidden");return}
- tabs.classList.remove("hidden");
- const list=currentUser.role==="Supervisor"?[["dashboard","Dashboard"],["save","Save"]]:[["dashboard","Dashboard"],["staff","Staff & PINs"],["setup","Setup"],["save","Save"]];
- tabs.innerHTML=list.map(t=>`<button class="tab ${currentView===t[0]?'active':''}" onclick="go('${t[0]}')">${t[1]}</button>`).join("")
-}
-function go(v){currentView=v;renderTabs();renderContent()}
-function renderContent(){
- if(currentView==="work") return renderWork();
- if(currentView==="dashboard") return renderDashboard();
- if(currentView==="reports") return renderReports(entries,"Live Operational Reports");
- if(currentView==="issues") return renderReports(entries.filter(hasIssue),"Issues");
- if(currentView==="staff") return renderStaff();
- if(currentView==="setup") return renderSetup();
- if(currentView==="save") return renderSave();
-}
-function resetEntry(){selectedMode=null;selectedStatus=[];selectedTask=[];selectedIssues=[];dropdownOpen=null}
-function toggle(arr,val){const i=arr.indexOf(val);if(i>=0)arr.splice(i,1);else arr.push(val)}
-
-function getCurrentTasks(){return entryType==="Suite Room"?suiteTasks:areaTasks}
-function getCurrentIssues(){return entryType==="Suite Room"?suiteIssues:areaIssues}
-function setStatus(mode){
- selectedMode=mode;
- selectedStatus=[mode];
- dropdownOpen=mode.toLowerCase();
- renderWork();
-}
-function stableToggleTask(item){
- const i=selectedTask.indexOf(item);
- if(i>=0) selectedTask.splice(i,1); else selectedTask.push(item);
- renderWork();
-}
-function stableToggleIssue(item){
- const i=selectedIssues.indexOf(item);
- if(i>=0) selectedIssues.splice(i,1); else selectedIssues.push(item);
- renderWork();
-}
-function renderStableChecklist(title,mode,items,selected){
- const open=dropdownOpen===mode;
- const count=selected.length;
- const body=open?`<div class="details-body"><div class="checks">${items.map(item=>{
-   const on=selected.includes(item)?"on":"";
-   const safe=item.replace(/'/g,"&#39;");
-   return `<button type="button" class="check ${on}" onclick="${mode==='task'?'stableToggleTask':'stableToggleIssue'}('${safe}')">${item}</button>`;
- }).join("")}</div></div>`:"";
- return `<div class="details-box">
-   <button type="button" class="details-head" onclick="dropdownOpen=dropdownOpen==='${mode}'?null:'${mode}';renderWork()">
-     <span>${title}</span><span class="count">${count} selected ${open?'▲':'▼'}</span>
-   </button>${body}</div>`;
-}
-function renderWork(){
- const list=entryType==="Suite Room"?rooms:areas;
- const locationLabel=entryType==="Suite Room"?"Suite Name":"Common Area";
- content.innerHTML=`<div class="card">
- <h2>Work Entry</h2><p class="small">Fast staff reporting. Select location, Task or Issue, checklist, then Submit.</p>
- <div class="segment">
-   <button type="button" class="${entryType==='Suite Room'?'active':''}" onclick="entryType='Suite Room';resetEntry();renderWork()">Suite Room</button>
-   <button type="button" class="${entryType==='Common Area'?'active':''}" onclick="entryType='Common Area';resetEntry();renderWork()">Common Area</button>
- </div>
- <label>${locationLabel}</label><select id="locationSelect">${list.map(x=>`<option>${x}</option>`).join("")}</select>
- <label>Status</label>
- <div class="status-row">
-   <button type="button" class="status ${selectedMode==='Task'?'on':''}" onclick="setStatus('Task')">Task</button>
-   <button type="button" class="status ${selectedMode==='Issue'?'on':''}" onclick="setStatus('Issue')">Issue</button>
- </div>
- ${selectedMode==='Task'?renderStableChecklist("Task Checklist","task",getCurrentTasks(),selectedTask):""}
- ${selectedMode==='Issue'?renderStableChecklist("Issue Checklist","issue",getCurrentIssues(),selectedIssues):""}
- <label>Photo</label>
- <div class="photo-row"><label class="photo-label" for="photoInput">📷 Photo</label><button type="button" class="btn secondary smallbtn" onclick="clearPhoto()">Remove</button></div>
- <input id="photoInput" class="file-input" type="file" accept="image/*" capture="environment" onchange="previewPhoto(event)">
- <img id="photoPreview" class="photo-preview hidden" alt="Issue photo preview">
- <label>Note</label><textarea id="note" rows="4" placeholder="Optional note"></textarea>
- <button type="button" class="btn full" style="margin-top:16px" onclick="submitEntry()">Submit</button>
- </div>`;
-}
-function previewPhoto(event){
- const file=event.target.files && event.target.files[0];
- const img=document.getElementById("photoPreview");
- if(!file||!img)return;
- const reader=new FileReader();
- reader.onload=e=>{img.src=e.target.result;img.classList.remove("hidden");};
- reader.readAsDataURL(file);
-}
-function clearPhoto(){
- const el=document.getElementById("photoInput");
- const img=document.getElementById("photoPreview");
- if(el) el.value="";
- if(img){img.src="";img.classList.add("hidden");}
-}
-function readPhoto(){
- return new Promise(resolve=>{
-  const el=document.getElementById("photoInput");
-  const file=el && el.files && el.files[0];
-  if(!file){resolve("");return}
-  const reader=new FileReader();
-  reader.onload=e=>resolve(e.target.result);
-  reader.readAsDataURL(file);
- });
-}
-async function submitEntry(){
- const loc=document.getElementById("locationSelect").value;
- const note=document.getElementById("note").value.trim();
- if(!selectedMode){showToast("Please select Task or Issue");return}
- if(selectedMode==="Task" && selectedTask.length===0){showToast("Please select at least one task");return}
- if(selectedMode==="Issue" && selectedIssues.length===0){showToast("Please select at least one issue");return}
- const photo=await readPhoto();
- entries.push({id:Date.now(),time:new Date().toISOString(),staff:currentUser.name,role:currentUser.role,type:entryType,location:loc,status:[selectedMode],tasks:[...selectedTask],issues:[...selectedIssues],note,photo});
- saveEntries(); resetEntry(); showToast("Submitted to Dashboard"); renderWork();
-}
-function renderDashboard(){
- const today=todayEntries(),issues=entries.filter(hasIssue),active=new Set(today.map(e=>e.staff)).size;
- content.innerHTML=`<div class="card"><h2>${currentUser.role} Dashboard</h2><p class="small">Management live overview after staff submission.</p><div class="dashboard-grid"><div class="metric">Today Entries<strong>${today.length}</strong></div><div class="metric">Open Issues<strong>${issues.length}</strong></div><div class="metric">Active Staff<strong>${active}</strong></div></div></div>${entryList(today.slice(-5).reverse(),"Latest Today")}`
-}
-function renderReports(list,title){content.innerHTML=`<div class="card"><h2>${title}</h2><p class="small">${list.length} report(s)</p></div>${entryList(list.slice().reverse(),"")}`}
-function entryList(list,title){if(!list.length)return `<div class="card"><h3>${title||"Reports"}</h3><p class="small">No entries yet.</p></div>`;return `<div class="card">${title?`<h3>${title}</h3>`:""}${list.map(e=>`<div class="entry ${hasIssue(e)?'issue':''}"><div class="entry-title">${e.location} <span class="small">(${e.type})</span></div><div class="small">Staff: ${e.staff} · ${new Date(e.time).toLocaleString()}</div><div>${e.status.map(s=>`<span class="badge ${s==='Issue'?'issue':''}">${s}</span>`).join("")}</div>${e.tasks.length?`<p><b>Tasks:</b> ${e.tasks.join(", ")}</p>`:""}${e.issues.length?`<p><b>Issues:</b> ${e.issues.join(", ")}</p>`:""}${e.note?`<p><b>Note:</b> ${e.note}</p>`:""}${e.photo?`<img class="photo-preview" src="${e.photo}" alt="Attached issue photo">`:""}</div>`).join("")}</div>`}
-function renderStaff(){
- content.innerHTML=`<div class="card"><h2>Staff & PIN Management</h2><p class="small">Admin-only. Add, edit, remove staff and manage PINs.</p>
- <div class="add-row">
-   <input id="staffNameInput" placeholder="Staff name">
-   <select id="staffRoleInput"><option>Staff</option><option>Supervisor</option><option>Admin</option></select>
-   <input id="staffPinInput" placeholder="4-digit PIN" maxlength="4" inputmode="numeric">
-   <button class="btn smallbtn" onclick="addStaff()">Add Staff</button>
- </div>
- <div class="staff-list">${users.map((u,i)=>`<div class="staff-card"><div><strong>${u.name}</strong><div class="small">${u.role}</div></div><div class="row"><div class="pin-badge">PIN ${u.pin}</div><button class="btn secondary smallbtn" onclick="editStaff(${i})">Edit</button><button class="btn danger smallbtn" onclick="deleteStaff(${i})">Remove</button></div></div>`).join("")}</div></div>`;
-}
-function addStaff(){
- const name=staffNameInput.value.trim(), role=staffRoleInput.value, pin=staffPinInput.value.trim();
- if(!name||!pin){showToast("Please enter staff name and PIN");return}
- if(!/^[0-9]{4}$/.test(pin)){showToast("PIN must be 4 digits");return}
- users.push({name,role,pin});saveEntries();
-function renderSave(){
- content.innerHTML=`<div class="card"><h2>Save / Backup</h2><p class="small">Backup and restore CleanOps data for safe testing and continuity.</p>
- <div class="row" style="margin-top:12px">
-   <button class="btn" onclick="backupJSON()">Backup JSON</button>
-   <button class="btn secondary" onclick="restoreInput.click()">Restore JSON</button>
-   <button class="btn warn" onclick="printDashboard()">Print / Save PDF</button>
- </div>
- <input id="restoreInput" class="hidden" type="file" accept="application/json,.json" onchange="restoreJSON(event)">
- </div>`;
-}
-function collectData(){
- return {version:"CleanOps V7.3.1.2",property:"Karma Tara Residency",users,rooms,areas,suiteTasks,suiteIssues,areaTasks,areaIssues,entries,backupTime:new Date().toISOString()};
-}
-function backupJSON(){
- const blob=new Blob([JSON.stringify(collectData(),null,2)],{type:"application/json"});
- const a=document.createElement("a");
- a.href=URL.createObjectURL(blob);
- a.download="cleanops_v7312_backup_"+new Date().toISOString().slice(0,10)+".json";
- document.body.appendChild(a);a.click();a.remove();
- showToast("Backup JSON downloaded");
-}
-function restoreJSON(event){
- const file=event.target.files&&event.target.files[0]; if(!file)return;
- const reader=new FileReader();
- reader.onload=e=>{
-  try{
-   const data=JSON.parse(e.target.result);
-   if(data.users) users=data.users;
-   if(data.rooms) rooms=data.rooms;
-   if(data.areas) areas=data.areas;
-   if(data.suiteTasks) suiteTasks=data.suiteTasks;
-   if(data.suiteIssues) suiteIssues=data.suiteIssues;
-   if(data.areaTasks) areaTasks=data.areaTasks;
-   if(data.areaIssues) areaIssues=data.areaIssues;
-   if(data.taskItems && !data.suiteTasks) suiteTasks=data.taskItems;
-   if(data.issueTasks && !data.suiteIssues) suiteIssues=data.issueTasks;
-   if(data.entries) entries=data.entries;
-   saveEntries();fillUsers();showToast("Backup restored");go("dashboard");
-  }catch(err){showToast("Invalid backup file")}
- };
- reader.readAsText(file); event.target.value="";
-}
-function printDashboard(){go("dashboard");setTimeout(()=>window.print(),200)}
-
-fillUsers();renderStaff();
-}
-function editStaff(i){
- const u=users[i];
- const name=prompt("Staff name",u.name); if(!name||!name.trim())return;
- const role=prompt("Role: Admin, Supervisor, Staff",u.role); if(!role||!role.trim())return;
- const pin=prompt("4-digit PIN",u.pin); if(!pin||!/^[0-9]{4}$/.test(pin)){showToast("PIN must be 4 digits");return}
- users[i]={name:name.trim(),role:role.trim(),pin};saveEntries();
-function renderSave(){
- content.innerHTML=`<div class="card"><h2>Save / Backup</h2><p class="small">Backup and restore CleanOps data for safe testing and continuity.</p>
- <div class="row" style="margin-top:12px">
-   <button class="btn" onclick="backupJSON()">Backup JSON</button>
-   <button class="btn secondary" onclick="restoreInput.click()">Restore JSON</button>
-   <button class="btn warn" onclick="printDashboard()">Print / Save PDF</button>
- </div>
- <input id="restoreInput" class="hidden" type="file" accept="application/json,.json" onchange="restoreJSON(event)">
- </div>`;
-}
-function collectData(){
- return {version:"CleanOps V7.3.1.2",property:"Karma Tara Residency",users,rooms,areas,suiteTasks,suiteIssues,areaTasks,areaIssues,entries,backupTime:new Date().toISOString()};
-}
-function backupJSON(){
- const blob=new Blob([JSON.stringify(collectData(),null,2)],{type:"application/json"});
- const a=document.createElement("a");
- a.href=URL.createObjectURL(blob);
- a.download="cleanops_v7312_backup_"+new Date().toISOString().slice(0,10)+".json";
- document.body.appendChild(a);a.click();a.remove();
- showToast("Backup JSON downloaded");
-}
-function restoreJSON(event){
- const file=event.target.files&&event.target.files[0]; if(!file)return;
- const reader=new FileReader();
- reader.onload=e=>{
-  try{
-   const data=JSON.parse(e.target.result);
-   if(data.users) users=data.users;
-   if(data.rooms) rooms=data.rooms;
-   if(data.areas) areas=data.areas;
-   if(data.suiteTasks) suiteTasks=data.suiteTasks;
-   if(data.suiteIssues) suiteIssues=data.suiteIssues;
-   if(data.areaTasks) areaTasks=data.areaTasks;
-   if(data.areaIssues) areaIssues=data.areaIssues;
-   if(data.taskItems && !data.suiteTasks) suiteTasks=data.taskItems;
-   if(data.issueTasks && !data.suiteIssues) suiteIssues=data.issueTasks;
-   if(data.entries) entries=data.entries;
-   saveEntries();fillUsers();showToast("Backup restored");go("dashboard");
-  }catch(err){showToast("Invalid backup file")}
- };
- reader.readAsText(file); event.target.value="";
-}
-function printDashboard(){go("dashboard");setTimeout(()=>window.print(),200)}
-
-fillUsers();renderStaff();
-}
-function deleteStaff(i){
- if(users.length<=1){showToast("At least one user required");return}
- if(confirm("Remove this staff?")){users.splice(i,1);saveEntries();
-function renderSave(){
- content.innerHTML=`<div class="card"><h2>Save / Backup</h2><p class="small">Backup and restore CleanOps data for safe testing and continuity.</p>
- <div class="row" style="margin-top:12px">
-   <button class="btn" onclick="backupJSON()">Backup JSON</button>
-   <button class="btn secondary" onclick="restoreInput.click()">Restore JSON</button>
-   <button class="btn warn" onclick="printDashboard()">Print / Save PDF</button>
- </div>
- <input id="restoreInput" class="hidden" type="file" accept="application/json,.json" onchange="restoreJSON(event)">
- </div>`;
-}
-function collectData(){
- return {version:"CleanOps V7.3.1.2",property:"Karma Tara Residency",users,rooms,areas,suiteTasks,suiteIssues,areaTasks,areaIssues,entries,backupTime:new Date().toISOString()};
-}
-function backupJSON(){
- const blob=new Blob([JSON.stringify(collectData(),null,2)],{type:"application/json"});
- const a=document.createElement("a");
- a.href=URL.createObjectURL(blob);
- a.download="cleanops_v7312_backup_"+new Date().toISOString().slice(0,10)+".json";
- document.body.appendChild(a);a.click();a.remove();
- showToast("Backup JSON downloaded");
-}
-function restoreJSON(event){
- const file=event.target.files&&event.target.files[0]; if(!file)return;
- const reader=new FileReader();
- reader.onload=e=>{
-  try{
-   const data=JSON.parse(e.target.result);
-   if(data.users) users=data.users;
-   if(data.rooms) rooms=data.rooms;
-   if(data.areas) areas=data.areas;
-   if(data.suiteTasks) suiteTasks=data.suiteTasks;
-   if(data.suiteIssues) suiteIssues=data.suiteIssues;
-   if(data.areaTasks) areaTasks=data.areaTasks;
-   if(data.areaIssues) areaIssues=data.areaIssues;
-   if(data.taskItems && !data.suiteTasks) suiteTasks=data.taskItems;
-   if(data.issueTasks && !data.suiteIssues) suiteIssues=data.issueTasks;
-   if(data.entries) entries=data.entries;
-   saveEntries();fillUsers();showToast("Backup restored");go("dashboard");
-  }catch(err){showToast("Invalid backup file")}
- };
- reader.readAsText(file); event.target.value="";
-}
-function printDashboard(){go("dashboard");setTimeout(()=>window.print(),200)}
-
-fillUsers();renderStaff();}
-}
-function renderSetup(){
- content.innerHTML=`<div class="card">
- <h2>Setup</h2>
- <p class="small">Admin manages rooms, areas, and separate task/issue lists for Suite Rooms and Common Areas. Staff only reports work.</p>
- <div class="setup-grid">
-   <div>${setupBlock("Suite Rooms","rooms")}</div>
-   <div>${setupBlock("Common Areas","areas")}</div>
-   <div>${setupBlock("Suite Room Tasks","suiteTasks")}</div>
-   <div>${setupBlock("Suite Room Issues","suiteIssues")}</div>
-   <div>${setupBlock("Common Area Tasks","areaTasks")}</div>
-   <div>${setupBlock("Common Area Issues","areaIssues")}</div>
- </div>
- </div>`;
-}
-function setupBlock(title,type){
- const list=getSetupList(type);
- const label=type==="rooms"?"suite room":type==="areas"?"common area":type.includes("Tasks")?"task":"issue";
- return `<h3>${title}</h3>
- <div class="add-row">
-   <input id="${type}Input" placeholder="Add new ${label}">
-   <button class="btn smallbtn" onclick="addItem('${type}')">Add</button>
- </div>
- <div class="setup-list">
- ${list.map((x,i)=>`<div class="setup-card"><strong>${x}</strong><div class="row"><button class="btn secondary smallbtn" onclick="editItem('${type}',${i})">Edit</button><button class="btn danger smallbtn" onclick="deleteItem('${type}',${i})">Delete</button></div></div>`).join("")}
- </div>`;
-}
-function getSetupList(type){
- if(type==="rooms") return rooms;
- if(type==="areas") return areas;
- if(type==="suiteTasks") return suiteTasks;
- if(type==="suiteIssues") return suiteIssues;
- if(type==="areaTasks") return areaTasks;
- return areaIssues;
-}
-function addItem(type){
- const el=document.getElementById(type+"Input");
- const val=el.value.trim();
- if(!val){showToast("Please enter name");return}
- const list=getSetupList(type);
- if(list.some(x=>x.toLowerCase()===val.toLowerCase())){showToast("Already exists");return}
- list.push(val);saveEntries();renderSetup();
-}
-function editItem(type,i){
- const list=getSetupList(type);
- const val=prompt("Edit name",list[i]);
- if(!val||!val.trim())return;
- list[i]=val.trim();saveEntries();renderSetup();
-}
-function deleteItem(type,i){
- const list=getSetupList(type);
- if(confirm("Delete this item?")){list.splice(i,1);saveEntries();renderSetup();}
-}
-
-
-function renderSave(){
- content.innerHTML=`<div class="card"><h2>Save / Backup</h2><p class="small">Backup and restore CleanOps data for safe testing and continuity.</p>
- <div class="row" style="margin-top:12px">
-   <button class="btn" onclick="backupJSON()">Backup JSON</button>
-   <button class="btn secondary" onclick="restoreInput.click()">Restore JSON</button>
-   <button class="btn warn" onclick="printDashboard()">Print / Save PDF</button>
- </div>
- <input id="restoreInput" class="hidden" type="file" accept="application/json,.json" onchange="restoreJSON(event)">
- </div>`;
-}
-function collectData(){
- return {version:"CleanOps V7.3.1.2",property:"Karma Tara Residency",users,rooms,areas,suiteTasks,suiteIssues,areaTasks,areaIssues,entries,backupTime:new Date().toISOString()};
-}
-function backupJSON(){
- const blob=new Blob([JSON.stringify(collectData(),null,2)],{type:"application/json"});
- const a=document.createElement("a");
- a.href=URL.createObjectURL(blob);
- a.download="cleanops_v7312_backup_"+new Date().toISOString().slice(0,10)+".json";
- document.body.appendChild(a);a.click();a.remove();
- showToast("Backup JSON downloaded");
-}
-function restoreJSON(event){
- const file=event.target.files&&event.target.files[0]; if(!file)return;
- const reader=new FileReader();
- reader.onload=e=>{
-  try{
-   const data=JSON.parse(e.target.result);
-   if(data.users) users=data.users;
-   if(data.rooms) rooms=data.rooms;
-   if(data.areas) areas=data.areas;
-   if(data.suiteTasks) suiteTasks=data.suiteTasks;
-   if(data.suiteIssues) suiteIssues=data.suiteIssues;
-   if(data.areaTasks) areaTasks=data.areaTasks;
-   if(data.areaIssues) areaIssues=data.areaIssues;
-   if(data.taskItems && !data.suiteTasks) suiteTasks=data.taskItems;
-   if(data.issueTasks && !data.suiteIssues) suiteIssues=data.issueTasks;
-   if(data.entries) entries=data.entries;
-   saveEntries();fillUsers();showToast("Backup restored");go("dashboard");
-  }catch(err){showToast("Invalid backup file")}
- };
- reader.readAsText(file); event.target.value="";
-}
-function printDashboard(){go("dashboard");setTimeout(()=>window.print(),200)}
-
-fillUsers(); const saved=sessionStorage.getItem("cleanops_v7312_user"); if(saved){currentUser=JSON.parse(saved);startApp()}
+function tapPin(n){if(pin.value.length<4)pin.value+=n}function backspacePin(){pin.value=pin.value.slice(0,-1)}function clearPin(){pin.value=""}
+function login(){const u=users[loginUser.value];if(!u||pin.value!==u.pin){showToast("Incorrect PIN");return}currentUser=u;sessionStorage.setItem("cleanops_v7device_user",JSON.stringify(u));pin.value="";startApp()}
+function logout(){sessionStorage.removeItem("cleanops_v7device_user");currentUser=null;app.classList.add("hidden");bottomNav.classList.add("hidden");loginScreen.classList.remove("hidden")}
+function tick(){if(document.getElementById("dateTime"))dateTime.textContent=new Date().toLocaleDateString()+" | "+new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}setInterval(tick,1000);
+function startApp(){loginScreen.classList.add("hidden");app.classList.remove("hidden");bottomNav.classList.remove("hidden");userPill.textContent=`${currentUser.name} — ${currentUser.role}`;currentView=currentUser.role==="Staff"?"work":"dashboard";tick();renderTabs();renderContent();if(!window.matchMedia('(display-mode: standalone)').matches)installTip.classList.add('show')}
+function todayEntries(){const d=new Date().toDateString();return entries.filter(e=>new Date(e.time).toDateString()===d)}function hasIssue(e){return e.status.includes("Issue")||e.issues.length>0}
+function navList(){return currentUser.role==="Staff"?[["work","＋","Entry"],["reports","☑","My Work"],["issues","⚠","Issues"],["save","⋯","More"]]:[["dashboard","⌂","Home"],["work","＋","Entry"],["reports","☑","Reports"],["save","⋯","More"]]}
+function renderTabs(){const list=currentUser.role==="Staff"?[]:currentUser.role==="Supervisor"?[["dashboard","Dashboard"],["work","Entry"],["reports","Reports"],["issues","Issues"],["save","Save"]]:[["dashboard","Dashboard"],["work","Entry"],["reports","Reports"],["issues","Issues"],["staff","Staff"],["setup","Setup"],["save","Save"]];tabs.innerHTML=list.map(t=>`<button class="tab ${currentView===t[0]?'active':''}" onclick="go('${t[0]}')">${t[1]}</button>`).join("");bottomInner.innerHTML=navList().map(t=>`<button class="navbtn ${currentView===t[0]?'active':''}" onclick="go('${t[0]}')"><span>${t[1]}</span>${t[2]}</button>`).join("")}
+function go(v){currentView=v;renderTabs();renderContent();window.scrollTo({top:0,behavior:'smooth'})}
+function renderContent(){if(currentView==="work")return renderWork();if(currentView==="dashboard")return renderDashboard();if(currentView==="reports")return renderReports(currentUser.role==="Staff"?entries.filter(e=>e.staff===currentUser.name):entries,"Reports");if(currentView==="issues")return renderReports(entries.filter(hasIssue),"Issues");if(currentView==="staff")return renderStaff();if(currentView==="setup")return renderSetup();if(currentView==="save")return renderSave()}
+function resetEntry(){selectedMode=null;selectedTask=[];selectedIssues=[];dropdownOpen=null}function getCurrentTasks(){return entryType==="Suite Room"?suiteTasks:areaTasks}function getCurrentIssues(){return entryType==="Suite Room"?suiteIssues:areaIssues}function setStatus(mode){selectedMode=mode;dropdownOpen=mode.toLowerCase();renderWork()}function stableToggleTask(item){selectedTask.includes(item)?selectedTask.splice(selectedTask.indexOf(item),1):selectedTask.push(item);renderWork()}function stableToggleIssue(item){selectedIssues.includes(item)?selectedIssues.splice(selectedIssues.indexOf(item),1):selectedIssues.push(item);renderWork()}
+function renderChecklist(title,mode,items,selected){const open=dropdownOpen===mode;return `<div class="details-box"><button type="button" class="details-head" onclick="dropdownOpen=dropdownOpen==='${mode}'?null:'${mode}';renderWork()"><span>${title}</span><span class="count">${selected.length} selected ${open?'▲':'▼'}</span></button>${open?`<div class="details-body"><div class="checks">${items.map(item=>`<button type="button" class="check ${mode==='issue'?'issue':''} ${selected.includes(item)?'on':''}" onclick="${mode==='task'?'stableToggleTask':'stableToggleIssue'}('${item.replace(/'/g,"\\'")}')">${item}</button>`).join("")}</div></div>`:""}</div>`}
+function renderWork(){const list=entryType==="Suite Room"?rooms:areas;content.innerHTML=`<div class="card"><h2 class="section-title">Work Entry</h2><p class="small">Select location, Task or Issue, checklist, then Submit.</p><div class="segment"><button type="button" class="${entryType==='Suite Room'?'active':''}" onclick="entryType='Suite Room';resetEntry();renderWork()">Suite Room</button><button type="button" class="${entryType==='Common Area'?'active':''}" onclick="entryType='Common Area';resetEntry();renderWork()">Common Area</button></div><label>${entryType==='Suite Room'?'Suite Name':'Common Area'}</label><select id="locationSelect">${list.map(x=>`<option>${x}</option>`).join("")}</select><label>Status</label><div class="status-row"><button type="button" class="status ${selectedMode==='Task'?'on':''}" onclick="setStatus('Task')"><span class="ico">☑</span>Task</button><button type="button" class="status issue ${selectedMode==='Issue'?'on':''}" onclick="setStatus('Issue')"><span class="ico">⚠</span>Issue</button></div>${selectedMode==='Task'?renderChecklist("Task Checklist","task",getCurrentTasks(),selectedTask):""}${selectedMode==='Issue'?renderChecklist("Issue Checklist","issue",getCurrentIssues(),selectedIssues):""}<label>Photo</label><div class="photo-row"><label class="photo-label" for="photoInput">📷 Add Photo</label><button type="button" class="btn secondary smallbtn" onclick="clearPhoto()">Remove</button></div><input id="photoInput" class="file-input" type="file" accept="image/*" capture="environment" onchange="previewPhoto(event)"><img id="photoPreview" class="photo-preview hidden" alt="Photo preview"><label>Note</label><textarea id="note" rows="3" placeholder="Optional note"></textarea><button type="button" class="btn full" style="margin-top:12px" onclick="submitEntry()">Submit</button></div>`}
+function previewPhoto(event){const file=event.target.files&&event.target.files[0],img=document.getElementById("photoPreview");if(!file||!img)return;const reader=new FileReader();reader.onload=e=>{img.src=e.target.result;img.classList.remove("hidden")};reader.readAsDataURL(file)}function clearPhoto(){const el=document.getElementById("photoInput"),img=document.getElementById("photoPreview");if(el)el.value="";if(img){img.src="";img.classList.add("hidden")}}function readPhoto(){return new Promise(resolve=>{const el=document.getElementById("photoInput"),file=el&&el.files&&el.files[0];if(!file){resolve("");return}const reader=new FileReader();reader.onload=e=>resolve(e.target.result);reader.readAsDataURL(file)})}
+async function submitEntry(){const loc=document.getElementById("locationSelect").value,note=document.getElementById("note").value.trim();if(!selectedMode){showToast("Please select Task or Issue");return}if(selectedMode==="Task"&&selectedTask.length===0){showToast("Please select at least one task");return}if(selectedMode==="Issue"&&selectedIssues.length===0){showToast("Please select at least one issue");return}const photo=await readPhoto();entries.push({id:Date.now(),time:new Date().toISOString(),staff:currentUser.name,role:currentUser.role,type:entryType,location:loc,status:[selectedMode],tasks:[...selectedTask],issues:[...selectedIssues],note,photo});saveAll();resetEntry();showToast("Submitted");renderWork()}
+function renderDashboard(){const today=todayEntries(),issues=entries.filter(hasIssue),active=new Set(today.map(e=>e.staff)).size;content.innerHTML=`<div class="card"><h2 class="section-title">Dashboard</h2><p class="small">Live operational overview.</p><div class="dashboard-grid"><div class="metric">Today<strong>${today.length}</strong></div><div class="metric">Issues<strong>${issues.length}</strong></div><div class="metric">Staff<strong>${active}</strong></div></div></div>${entryList(today.slice(-5).reverse(),"Latest Today")}`}
+function renderReports(list,title){content.innerHTML=`<div class="card"><h2 class="section-title">${title}</h2><p class="small">${list.length} report(s)</p></div>${entryList(list.slice().reverse(),"")}`}
+function entryList(list,title){if(!list.length)return `<div class="card"><h3>${title||"Reports"}</h3><p class="small">No entries yet.</p></div>`;return `<div class="card">${title?`<h3>${title}</h3>`:""}${list.map(e=>`<div class="entry ${hasIssue(e)?'issue':''}"><div class="entry-title">${e.location} <span class="tiny">(${e.type})</span></div><div class="small">${e.staff} · ${new Date(e.time).toLocaleString()}</div><div>${e.status.map(s=>`<span class="badge ${s==='Issue'?'issue':''}">${s}</span>`).join("")}</div>${e.tasks.length?`<p class="small"><b>Tasks:</b> ${e.tasks.join(", ")}</p>`:""}${e.issues.length?`<p class="small"><b>Issues:</b> ${e.issues.join(", ")}</p>`:""}${e.note?`<p class="small"><b>Note:</b> ${e.note}</p>`:""}${e.photo?`<img class="photo-preview" src="${e.photo}" alt="Attached photo">`:""}</div>`).join("")}</div>`}
+function renderStaff(){content.innerHTML=`<div class="card"><h2 class="section-title">Staff & PINs</h2><p class="small">Admin only.</p><div class="add-row" style="margin-top:10px"><input id="staffNameInput" placeholder="Staff name"><button class="btn smallbtn" onclick="addStaff()">Add</button></div><div class="add-row" style="margin-top:7px"><select id="staffRoleInput"><option>Staff</option><option>Supervisor</option><option>Admin</option></select><input id="staffPinInput" placeholder="4-digit PIN" maxlength="4" inputmode="numeric"></div><div class="staff-list">${users.map((u,i)=>`<div class="staff-card"><div><strong>${u.name}</strong><div class="small">${u.role}</div></div><div class="row"><div class="pin-badge">${u.pin}</div><button class="btn secondary smallbtn" onclick="editStaff(${i})">Edit</button><button class="btn danger smallbtn" onclick="deleteStaff(${i})">Remove</button></div></div>`).join("")}</div></div>`}
+function addStaff(){const name=staffNameInput.value.trim(),role=staffRoleInput.value,pin=staffPinInput.value.trim();if(!name||!/^[0-9]{4}$/.test(pin)){showToast("Enter name and 4-digit PIN");return}users.push({name,role,pin});saveAll();fillUsers();renderStaff()}function editStaff(i){const u=users[i],name=prompt("Staff name",u.name);if(!name)return;const role=prompt("Role",u.role);if(!role)return;const pin=prompt("4-digit PIN",u.pin);if(!/^[0-9]{4}$/.test(pin)){showToast("PIN must be 4 digits");return}users[i]={name:name.trim(),role:role.trim(),pin};saveAll();fillUsers();renderStaff()}function deleteStaff(i){if(users.length<=1){showToast("At least one user required");return}if(confirm("Remove this staff?")){users.splice(i,1);saveAll();fillUsers();renderStaff()}}
+function getSetupList(type){return type==="rooms"?rooms:type==="areas"?areas:type==="suiteTasks"?suiteTasks:type==="suiteIssues"?suiteIssues:type==="areaTasks"?areaTasks:areaIssues}function setupBlock(title,type){const list=getSetupList(type),label=type==="rooms"?"suite room":type==="areas"?"common area":type.includes("Tasks")?"task":"issue";return `<div><h3>${title}</h3><div class="add-row"><input id="${type}Input" placeholder="Add ${label}"><button class="btn smallbtn" onclick="addItem('${type}')">Add</button></div><div class="setup-list">${list.map((x,i)=>`<div class="setup-card"><strong>${x}</strong><div class="row"><button class="btn secondary smallbtn" onclick="editItem('${type}',${i})">Edit</button><button class="btn danger smallbtn" onclick="deleteItem('${type}',${i})">Delete</button></div></div>`).join("")}</div></div>`}
+function renderSetup(){content.innerHTML=`<div class="card"><h2 class="section-title">Setup</h2><p class="small">Manage rooms, areas, task lists and issue lists.</p><div class="setup-grid" style="margin-top:10px">${setupBlock("Suite Rooms","rooms")}${setupBlock("Common Areas","areas")}${setupBlock("Suite Tasks","suiteTasks")}${setupBlock("Suite Issues","suiteIssues")}${setupBlock("Area Tasks","areaTasks")}${setupBlock("Area Issues","areaIssues")}</div></div>`}
+function addItem(type){const el=document.getElementById(type+"Input"),val=el.value.trim();if(!val){showToast("Enter name");return}const list=getSetupList(type);if(list.some(x=>x.toLowerCase()===val.toLowerCase())){showToast("Already exists");return}list.push(val);saveAll();renderSetup()}function editItem(type,i){const list=getSetupList(type),val=prompt("Edit name",list[i]);if(!val)return;list[i]=val.trim();saveAll();renderSetup()}function deleteItem(type,i){const list=getSetupList(type);if(confirm("Delete this item?")){list.splice(i,1);saveAll();renderSetup()}}
+function renderSave(){content.innerHTML=`<div class="card"><h2 class="section-title">Save / Backup</h2><p class="small">Backup and restore CleanOps data.</p><div class="row" style="margin-top:10px"><button class="btn" onclick="backupJSON()">Backup JSON</button><button class="btn secondary" onclick="restoreInput.click()">Restore JSON</button><button class="btn warn" onclick="printDashboard()">Print / PDF</button></div><input id="restoreInput" class="hidden" type="file" accept="application/json,.json" onchange="restoreJSON(event)"></div><div class="card"><h3>Device Tips</h3><p class="small">Use Add to Home Screen / Install App. For zero browser bar and stronger lock mode, test with Fully Kiosk Browser later.</p></div>`}
+function collectData(){return{version:"CleanOps V7 Device Edition",property:"Karma Tara Residency",users,rooms,areas,suiteTasks,suiteIssues,areaTasks,areaIssues,entries,backupTime:new Date().toISOString()}}function backupJSON(){const blob=new Blob([JSON.stringify(collectData(),null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="cleanops_v7_device_backup_"+new Date().toISOString().slice(0,10)+".json";document.body.appendChild(a);a.click();a.remove();showToast("Backup downloaded")}function restoreJSON(event){const file=event.target.files&&event.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=e=>{try{const data=JSON.parse(e.target.result);users=data.users||users;rooms=data.rooms||rooms;areas=data.areas||areas;suiteTasks=data.suiteTasks||suiteTasks;suiteIssues=data.suiteIssues||suiteIssues;areaTasks=data.areaTasks||areaTasks;areaIssues=data.areaIssues||areaIssues;entries=data.entries||entries;saveAll();fillUsers();showToast("Backup restored");go("dashboard")}catch(err){showToast("Invalid backup file")}};reader.readAsText(file);event.target.value=""}function printDashboard(){go("dashboard");setTimeout(()=>window.print(),250)}
+function attemptFullscreen(){const el=document.documentElement;if(el.requestFullscreen)el.requestFullscreen().catch(()=>showToast("Fullscreen not allowed here"));else showToast("Fullscreen not available")}
+if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}))}
+fillUsers();const saved=sessionStorage.getItem("cleanops_v7device_user");if(saved){currentUser=JSON.parse(saved);startApp()}
 </script>
 </body>
 </html>
