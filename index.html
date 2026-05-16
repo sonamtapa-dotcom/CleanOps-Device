@@ -1,198 +1,511 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <meta name="theme-color" content="#0f766e" />
-  <title>CleanOps V8 — Device Mode Prototype</title>
-  <style>
-    :root{
-      --bg:#eef7f5;--card:#ffffff;--ink:#14312e;--muted:#5f7772;--brand:#0f766e;--brand2:#14b8a6;--soft:#dff4ef;--danger:#dc2626;--warn:#d97706;--ok:#15803d;--line:#d8ebe7;--shadow:0 18px 45px rgba(15,118,110,.15);--radius:22px;
-    }
-    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-    html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:linear-gradient(160deg,#e7f7f3 0%,#f8fbfa 58%,#dff4ef 100%);color:var(--ink);overscroll-behavior:none}
-    body.kiosk{user-select:none;touch-action:manipulation}
-    button,input,select,textarea{font:inherit}
-    .app{min-height:100dvh;display:flex;justify-content:center;padding:14px}
-    .phone{width:min(100%,470px);min-height:calc(100dvh - 28px);background:rgba(255,255,255,.72);border:1px solid rgba(15,118,110,.14);box-shadow:var(--shadow);border-radius:30px;overflow:hidden;display:flex;flex-direction:column;position:relative}
-    header{background:linear-gradient(135deg,var(--brand),#0b5e58);color:white;padding:18px 18px 14px;position:sticky;top:0;z-index:10}
-    .topbar{display:flex;align-items:center;justify-content:space-between;gap:10px}
-    .brand{display:flex;gap:10px;align-items:center}.logo{width:42px;height:42px;border-radius:16px;background:white;color:var(--brand);display:grid;place-items:center;font-weight:900;box-shadow:0 10px 22px rgba(0,0,0,.18)}
-    h1{font-size:18px;margin:0;line-height:1.05}.sub{font-size:12px;opacity:.86;margin-top:3px}.statusPills{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}.pill{font-size:11px;padding:6px 9px;border-radius:999px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.24);white-space:nowrap}.pill.ok{background:rgba(34,197,94,.22)}.pill.warn{background:rgba(245,158,11,.25)}
-    main{padding:16px;flex:1;overflow:auto}.screen{display:none;animation:fade .18s ease}.screen.active{display:block}@keyframes fade{from{opacity:.4;transform:translateY(4px)}to{opacity:1;transform:none}}
-    .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin-bottom:14px;box-shadow:0 8px 26px rgba(15,49,46,.06)}
-    .title{font-size:20px;font-weight:900;margin:0 0 5px}.hint{color:var(--muted);font-size:13px;line-height:1.45;margin:0 0 12px}.grid{display:grid;gap:10px}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-    .btn{border:0;border-radius:18px;padding:15px 14px;background:var(--brand);color:white;font-weight:800;min-height:54px;box-shadow:0 8px 16px rgba(15,118,110,.18);cursor:pointer}.btn:active{transform:scale(.985)}.btn.secondary{background:#eef7f5;color:var(--brand);border:1px solid var(--line);box-shadow:none}.btn.ghost{background:white;color:var(--ink);border:1px solid var(--line);box-shadow:none}.btn.warn{background:var(--warn)}.btn.danger{background:var(--danger)}.btn.ok{background:var(--ok)}.btn.small{min-height:40px;padding:9px 11px;border-radius:13px;font-size:13px}.btn.full{width:100%}.btn.selected{outline:3px solid rgba(20,184,166,.35);background:#0d9488;color:white}
-    input,select,textarea{width:100%;border:1px solid var(--line);border-radius:16px;background:white;padding:14px;color:var(--ink);outline:none}textarea{min-height:82px;resize:vertical}.label{font-size:12px;font-weight:800;color:var(--muted);margin:10px 0 6px}.bigNum{font-size:34px;font-weight:950;line-height:1}.muted{color:var(--muted)}
-    .roomList{display:grid;gap:9px}.room{display:flex;align-items:center;justify-content:space-between;gap:10px;border:1px solid var(--line);border-radius:18px;background:#fff;padding:13px}.room strong{font-size:15px}.badge{font-size:11px;font-weight:800;border-radius:999px;padding:5px 8px;background:var(--soft);color:var(--brand)}.badge.done{background:#dcfce7;color:#166534}.badge.issue{background:#fee2e2;color:#991b1b}.badge.task{background:#fef3c7;color:#92400e}
-    .bottomNav{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding:9px;background:rgba(255,255,255,.92);border-top:1px solid var(--line);position:sticky;bottom:0}.navbtn{background:transparent;border:0;border-radius:14px;padding:9px 4px;color:var(--muted);font-size:11px;font-weight:800}.navbtn.active{background:var(--soft);color:var(--brand)}.navicon{font-size:19px;display:block;margin-bottom:2px}
-    .qrBox{height:170px;border:2px dashed #8fd8cf;border-radius:24px;display:grid;place-items:center;text-align:center;background:linear-gradient(135deg,#f7fffd,#ecf8f6);margin-bottom:12px}.qrIcon{font-size:44px}.checkRow{display:grid;grid-template-columns:1fr 1fr;gap:8px}.check{border:1px solid var(--line);background:white;border-radius:16px;padding:12px;text-align:center;font-weight:800}.check.active{background:var(--soft);color:var(--brand);border-color:#99e5dc}.log{font-size:12px;background:#f8fbfa;border:1px solid var(--line);border-radius:14px;padding:10px;max-height:170px;overflow:auto;white-space:pre-wrap}.syncDot{width:10px;height:10px;border-radius:50%;background:var(--ok);display:inline-block;margin-right:6px}.syncDot.off{background:var(--warn)}.hidden{display:none!important}.footerNote{text-align:center;font-size:11px;color:var(--muted);padding:8px 0}.modal{position:absolute;inset:0;background:rgba(8,34,31,.62);display:none;place-items:center;padding:18px;z-index:50}.modal.show{display:grid}.modal .card{width:100%;max-width:390px;margin:0}.kioskRibbon{position:absolute;right:-38px;top:88px;background:#0f766e;color:white;font-size:10px;font-weight:900;letter-spacing:.08em;padding:7px 42px;transform:rotate(35deg);box-shadow:0 5px 14px rgba(0,0,0,.18);z-index:20}
-    @media(max-width:380px){.app{padding:0}.phone{border-radius:0;min-height:100dvh}.grid2,.checkRow{grid-template-columns:1fr}.title{font-size:18px}.btn{min-height:50px}.kioskRibbon{display:none}}
-    @media(min-width:760px){.phone{max-width:760px}.tabletGrid{display:grid;grid-template-columns:1.1fr .9fr;gap:14px}.bottomNav{grid-template-columns:repeat(4,120px);justify-content:center}.roomList{grid-template-columns:1fr 1fr}}
-    @media print{.bottomNav,.modal,.kioskRibbon{display:none}.phone{box-shadow:none;width:100%;border-radius:0}.app{padding:0}}
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CleanOps V7.3.1.2.1 — Workflow Category Separation</title>
+<meta name="theme-color" content="#16824f">
+<style>
+:root{--green:#16824f;--dark:#0e653b;--soft:#f3faf6;--bg:#f5f8f6;--text:#17251e;--muted:#66746d;--line:#dfe9e3;--warn:#b54708;--danger:#b42318;--shadow:0 12px 28px rgba(24,45,34,.10)}
+*{box-sizing:border-box} body{margin:0;font-family:Arial,Helvetica,sans-serif;background:linear-gradient(180deg,#f8fbf8,#edf6f1);color:var(--text)}
+.hidden{display:none!important} button,input,select,textarea{font-family:inherit} button{cursor:pointer}
+.logo-img{width:100%;height:100%;object-fit:contain;display:block}
+.logo-box-login{width:190px;height:170px;margin:0 auto 8px}
+.logo-box-header{width:210px;height:180px;margin:0 auto}
+.login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:18px}
+.login-card{width:min(440px,94vw);background:#fff;border-radius:30px;padding:28px;box-shadow:var(--shadow);border:1px solid var(--line)}
+.center{text-align:center} h1,h2,h3{margin:0 0 8px} p{margin:5px 0} .small{font-size:13px;color:var(--muted)} label{display:block;margin:15px 0 7px;font-weight:800}
+select,input,textarea{width:100%;border:1px solid var(--line);border-radius:16px;padding:15px;background:#fff;font-size:16px;outline:none}
+input:focus,select:focus,textarea:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(22,130,79,.12)}
+.pin-row{display:grid;grid-template-columns:1fr auto;gap:10px} .icon-btn{width:54px;height:54px;border:1px solid var(--line);border-radius:16px;background:#f8fbf9;color:var(--green);font-weight:900;font-size:18px}
+.keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:12px} .key{border:1px solid var(--line);background:#fbfdfb;border-radius:16px;padding:15px 0;font-size:20px;font-weight:900;color:#183326} .key:active{background:var(--soft);transform:scale(.98)}
+.btn{border:0;border-radius:16px;padding:15px 16px;font-weight:900;background:var(--green);color:#fff;font-size:16px} .btn:hover{background:var(--dark)} .btn.full{width:100%} .btn.secondary{background:#eef6f1;color:var(--green)} .btn.warn{background:#fff4e8;color:var(--warn)} .btn.danger{background:#fff1f0;color:var(--danger)}
+.app{max-width:1120px;margin:0 auto;padding:14px}
+.header{background:#fff;border-radius:28px;box-shadow:var(--shadow);border:1px solid var(--line);padding:20px 24px;display:grid;grid-template-columns:245px 1fr 180px;gap:22px;align-items:center;min-height:210px}
+.brand{text-align:center} .brand h1{font-size:28px;margin-bottom:6px;line-height:1.18} .powered{color:var(--muted);font-weight:700;font-size:17px} .datetime{font-size:13px;color:var(--muted);margin-top:8px}
+.userbox{text-align:right} .user-pill{background:#e7f4e9;border-radius:14px;padding:13px;font-weight:900;text-align:center;margin-bottom:10px}
+.card{background:#fff;border-radius:24px;border:1px solid var(--line);box-shadow:var(--shadow);padding:22px;margin-top:14px}
+.tabs{display:flex;gap:8px;margin-top:14px} .tab{flex:1;border:1px solid var(--line);background:#fff;border-radius:16px;padding:14px;font-weight:900} .tab.active{background:var(--green);color:#fff;border-color:var(--green)}
+.segment{display:flex;gap:10px;margin:12px 0} .segment button{flex:1;border:1px solid var(--line);background:#fff;border-radius:16px;padding:14px;font-weight:900} .segment button.active{background:var(--green);color:#fff;border-color:var(--green)}
+.status-row{display:grid;grid-template-columns:repeat(2,1fr);gap:10px} .status{border:2px solid var(--line);border-radius:16px;padding:14px;text-align:center;font-weight:900;background:#fff} .status.on{border-color:var(--green);background:var(--soft);color:var(--green)}
+.details-box{border:1px solid var(--line);border-radius:18px;background:#fff;overflow:hidden;margin-top:12px} .details-head{width:100%;border:0;background:#f8fbf9;padding:15px;display:flex;align-items:center;justify-content:space-between;font-weight:900;color:var(--text)} .count{background:var(--soft);color:var(--green);border-radius:999px;padding:5px 9px;font-size:12px}
+.details-body{padding:14px;border-top:1px solid var(--line)} .checks{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px} .check{border:2px solid var(--line);background:#fff;border-radius:15px;padding:12px;text-align:center;font-weight:900} .check.on{border-color:var(--green);background:var(--soft);color:var(--green)}
+.dashboard-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-top:14px} .metric{border:1px solid var(--line);border-radius:18px;background:#fbfdfb;padding:16px} .metric strong{display:block;font-size:28px;color:var(--green);margin-top:4px}
+.entry{border:1px solid var(--line);border-left:6px solid var(--green);border-radius:18px;padding:14px;margin:10px 0;background:#fff} .entry.issue{border-left-color:var(--warn)} .entry-title{font-size:17px;font-weight:900} .badge{display:inline-block;padding:6px 9px;border-radius:999px;background:var(--soft);color:var(--green);font-size:12px;font-weight:900;margin:4px 4px 0 0} .badge.issue{background:#fff4e8;color:var(--warn)}
+.staff-list{display:grid;gap:10px;margin-top:12px} .staff-card{border:1px solid var(--line);border-radius:16px;padding:13px;background:#fbfdfb;display:flex;justify-content:space-between;gap:12px;align-items:center} .pin-badge{background:#eef6f1;color:#145c39;border-radius:999px;padding:7px 10px;font-weight:900;font-size:13px}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#133b29;color:#fff;padding:13px 18px;border-radius:999px;font-weight:900;box-shadow:var(--shadow);display:none;z-index:99}
+.footer{text-align:center;color:var(--muted);font-size:13px;padding:18px}
+@media(max-width:760px){.login-card{padding:22px;border-radius:26px}.logo-box-login{width:170px;height:155px}.header{grid-template-columns:1fr;text-align:center;padding:20px 18px;gap:10px;min-height:auto}.logo-box-header{width:185px;height:165px}.userbox{text-align:center}.tabs{overflow:auto}.tab{min-width:120px}.status-row{grid-template-columns:1fr}}
+
+.setup-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.setup-list{display:grid;gap:10px;margin-top:12px}
+.setup-card{border:1px solid var(--line);border-radius:16px;padding:13px;background:#fbfdfb;display:flex;justify-content:space-between;gap:12px;align-items:center}
+.add-row{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:end}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.btn.smallbtn{padding:9px 11px;font-size:13px;border-radius:12px}
+@media(max-width:760px){.setup-grid,.add-row{grid-template-columns:1fr}}
+
+
+.photo-preview{margin-top:10px;max-width:230px;border-radius:14px;border:1px solid var(--line);display:block}
+.photo-row{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center}
+.photo-label{border:1px solid var(--line);background:#fbfdfb;border-radius:16px;padding:15px;font-weight:900;text-align:center;color:var(--green)}
+.file-input{display:none}
+.btn.smallbtn{padding:9px 11px;font-size:13px;border-radius:12px}
+@media print{.tabs,.btn,.keypad,.login-wrap{display:none!important}.card,.header{box-shadow:none}body{background:#fff}}
+</style>
 </head>
-<body class="kiosk">
-<div class="app">
-  <div class="phone">
-    <div class="kioskRibbon">DEVICE MODE</div>
-    <header>
-      <div class="topbar">
-        <div class="brand"><div class="logo">CO</div><div><h1>CleanOps V8</h1><div class="sub">Device Mode Prototype · Karma Tara Residency</div></div></div>
-        <div class="statusPills"><span class="pill ok" id="netPill">Local WiFi</span><span class="pill" id="queuePill">0 queued</span></div>
-      </div>
-    </header>
+<body>
 
-    <main>
-      <section id="login" class="screen active">
-        <div class="card">
-          <p class="title">Housekeeping Terminal</p>
-          <p class="hint">Single-purpose staff device view. Designed for kiosk/app pinning, quick shift login, offline work, and later local server sync.</p>
-          <div class="label">Staff</div>
-          <select id="staff"><option>Amar</option><option>Kul Bdr.</option><option>Raman</option><option>Sonam</option></select>
-          <div class="label">PIN</div>
-          <input id="pin" type="password" inputmode="numeric" maxlength="4" placeholder="Enter 4-digit PIN" />
-          <button class="btn full" onclick="login()">Start Shift</button>
-          <button class="btn secondary full" onclick="showAdmin()" style="margin-top:10px">Admin / Setup</button>
-        </div>
-        <div class="card">
-          <b>Device setup reminder</b>
-          <p class="hint" style="margin-top:8px">Use Android App Pinning or Fully Kiosk Browser. Hide browser controls, disable pull-down notifications, auto-open CleanOps, and require Admin PIN to exit.</p>
-        </div>
-      </section>
-
-      <section id="home" class="screen">
-        <div class="tabletGrid">
-          <div>
-            <div class="card">
-              <p class="title">Today’s Shift</p>
-              <p class="hint" id="shiftInfo">Staff shift active.</p>
-              <div class="grid3">
-                <div class="card" style="margin:0;text-align:center;padding:12px"><div class="bigNum" id="doneCount">0</div><div class="muted">Done</div></div>
-                <div class="card" style="margin:0;text-align:center;padding:12px"><div class="bigNum" id="issueCount">0</div><div class="muted">Issues</div></div>
-                <div class="card" style="margin:0;text-align:center;padding:12px"><div class="bigNum" id="taskCount">0</div><div class="muted">Tasks</div></div>
-              </div>
-            </div>
-            <div class="card">
-              <p class="title">Assigned Rooms</p>
-              <div class="roomList" id="roomList"></div>
-            </div>
-          </div>
-          <div class="card">
-            <p class="title">Fast Actions</p>
-            <div class="grid">
-              <button class="btn" onclick="go('scan')">📷 Scan Room QR</button>
-              <button class="btn secondary" onclick="quickRoomPrompt()">⌨️ Enter Room Manually</button>
-              <button class="btn secondary" onclick="go('sync')">🔄 Sync / Queue Status</button>
-              <button class="btn ghost" onclick="showAdmin()">🔐 Admin Exit / Settings</button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section id="scan" class="screen">
-        <div class="card">
-          <p class="title">Room QR Scan</p>
-          <p class="hint">Prototype scan mode. In the next real build, camera QR scanning will open the selected room automatically.</p>
-          <div class="qrBox"><div><div class="qrIcon">▣</div><b>Point camera at room QR</b><br><span class="muted">Demo: choose a room below</span></div></div>
-          <div class="grid2" id="scanRooms"></div>
-        </div>
-      </section>
-
-      <section id="work" class="screen">
-        <div class="card">
-          <p class="title" id="workTitle">Room</p>
-          <p class="hint">Large-button housekeeping workflow for staff device use.</p>
-          <div class="label">Work Category</div>
-          <div class="grid3"><button class="btn secondary cat" onclick="setCategory('Suite')">Suite</button><button class="btn secondary cat" onclick="setCategory('Common')">Common</button><button class="btn secondary cat" onclick="setCategory('Maintenance')">Maintenance</button></div>
-          <div class="label">Status</div>
-          <div class="grid2"><button class="btn ok status" onclick="setStatus('Cleaned')">✅ Cleaned</button><button class="btn warn status" onclick="setStatus('Task')">🧹 Task</button><button class="btn danger status" onclick="setStatus('Issue')">⚠️ Issue</button><button class="btn secondary status" onclick="setStatus('Inspect')">👁 Inspect</button></div>
-          <div class="label">Checklist</div>
-          <div class="checkRow" id="checks"></div>
-          <div class="label">Note</div>
-          <textarea id="note" placeholder="Optional note, issue detail, or staff remark"></textarea>
-          <div class="grid2" style="margin-top:10px"><button class="btn secondary" onclick="fakePhoto()">📸 Add Photo Proof</button><button class="btn" onclick="saveEntry()">Save Entry</button></div>
-        </div>
-      </section>
-
-      <section id="sync" class="screen">
-        <div class="card">
-          <p class="title">Offline Queue & Sync</p>
-          <p class="hint"><span class="syncDot" id="dot"></span><span id="syncText">Connected to local WiFi mode.</span></p>
-          <div class="grid2"><button class="btn secondary" onclick="toggleNetwork()">Toggle WiFi Demo</button><button class="btn" onclick="syncNow()">Sync Now</button></div>
-        </div>
-        <div class="card">
-          <p class="title">Activity Log</p>
-          <div class="log" id="log"></div>
-        </div>
-      </section>
-
-      <section id="report" class="screen">
-        <div class="card">
-          <p class="title">Daily Report</p>
-          <p class="hint">Manager-friendly report generated from device entries.</p>
-          <div class="log" id="reportBox"></div>
-          <div class="grid2" style="margin-top:10px"><button class="btn secondary" onclick="buildReport()">Refresh</button><button class="btn" onclick="shareWhatsApp()">WhatsApp Report</button></div>
-        </div>
-      </section>
-    </main>
-
-    <nav class="bottomNav hidden" id="nav">
-      <button class="navbtn active" onclick="go('home')"><span class="navicon">🏠</span>Home</button>
-      <button class="navbtn" onclick="go('scan')"><span class="navicon">▣</span>Scan</button>
-      <button class="navbtn" onclick="go('sync')"><span class="navicon">🔄</span>Sync</button>
-      <button class="navbtn" onclick="go('report')"><span class="navicon">📋</span>Report</button>
-    </nav>
-
-    <div class="modal" id="adminModal">
-      <div class="card">
-        <p class="title">Admin / Device Exit</p>
-        <p class="hint">Admin PIN protects exit, settings, and kiosk/device setup.</p>
-        <input id="adminPin" type="password" inputmode="numeric" maxlength="4" placeholder="Admin PIN: 9999" />
-        <div class="grid2" style="margin-top:10px"><button class="btn secondary" onclick="closeAdmin()">Cancel</button><button class="btn" onclick="adminUnlock()">Unlock</button></div>
-        <div id="adminPanel" class="hidden" style="margin-top:12px">
-          <div class="grid">
-            <button class="btn secondary" onclick="alert('Use Fully Kiosk Browser: set Start URL, enable Fullscreen, Autostart, Kiosk Lockdown, and Exit PIN.')">Kiosk Setup Notes</button>
-            <button class="btn secondary" onclick="exportData()">Export Local Data</button>
-            <button class="btn danger" onclick="endShift()">End Shift / Logout</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-  </div>
+<section id="loginScreen" class="login-wrap">
+<div class="login-card">
+<div class="logo-box-login"><img class="logo-img" src="data:image/svg+xml;charset=UTF-8,%3Csvg%20viewBox%3D%220%200%20280%20245%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20aria-label%3D%22CleanOps%20Logo%22%3E%0A%3Cdefs%3E%0A%3ClinearGradient%20id%3D%22g1%22%20x1%3D%220%22%20x2%3D%221%22%20y1%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%236fbe44%22/%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%230d7a4a%22/%3E%3C/linearGradient%3E%0A%3ClinearGradient%20id%3D%22g2%22%20x1%3D%220%22%20x2%3D%221%22%20y1%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%2316a05d%22/%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%232b76b9%22/%3E%3C/linearGradient%3E%0A%3C/defs%3E%0A%3Cpath%20d%3D%22M55%2098%20L138%2035%20L225%2098%22%20fill%3D%22none%22%20stroke%3D%22url%28%23g1%29%22%20stroke-width%3D%2215%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22/%3E%0A%3Cpath%20d%3D%22M74%20100%20V168%20H118%20V122%20H158%20V168%20H204%20V100%22%20fill%3D%22none%22%20stroke%3D%22%230e7848%22%20stroke-width%3D%2213%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22/%3E%0A%3Cpath%20d%3D%22M95%20107%20L137%20151%20L211%2062%22%20fill%3D%22none%22%20stroke%3D%22url%28%23g2%29%22%20stroke-width%3D%2222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22/%3E%0A%3Crect%20x%3D%22139%22%20y%3D%2276%22%20width%3D%2213%22%20height%3D%2213%22%20fill%3D%22%230e7848%22/%3E%3Crect%20x%3D%22156%22%20y%3D%2276%22%20width%3D%2213%22%20height%3D%2213%22%20fill%3D%22%230e7848%22/%3E%3Crect%20x%3D%22139%22%20y%3D%2293%22%20width%3D%2213%22%20height%3D%2213%22%20fill%3D%22%230e7848%22/%3E%3Crect%20x%3D%22156%22%20y%3D%2293%22%20width%3D%2213%22%20height%3D%2213%22%20fill%3D%22%230e7848%22/%3E%0A%3Cpath%20d%3D%22M91%2030%20l5%2013%2013%205-13%205-5%2013-5-13-13-5%2013-5z%22%20fill%3D%22%23f6d23f%22/%3E%3Cpath%20d%3D%22M211%2020%20l4%2010%2010%204-10%204-4%2010-4-10-10-4%2010-4z%22%20fill%3D%22%23f6d23f%22/%3E%0A%3Ctext%20x%3D%22140%22%20y%3D%22213%22%20text-anchor%3D%22middle%22%20font-size%3D%2247%22%20font-weight%3D%22800%22%20font-family%3D%22Arial%22%3E%3Ctspan%20fill%3D%22%230e7848%22%3EClean%3C/tspan%3E%3Ctspan%20fill%3D%22%232b76b9%22%3EOps%3C/tspan%3E%3C/text%3E%0A%3Ctext%20x%3D%22140%22%20y%3D%22238%22%20text-anchor%3D%22middle%22%20font-size%3D%2216%22%20font-weight%3D%22700%22%20fill%3D%22%235e6e66%22%20font-family%3D%22Arial%22%3EHospitality%20Management%3C/text%3E%0A%3C/svg%3E" alt="CleanOps logo"></div>
+<div class="center"><h1>CleanOps Login</h1><p class="small">Hospitality Management · Daily Operations</p></div>
+<label>Staff Name</label><select id="loginUser"></select>
+<label>PIN</label><div class="pin-row"><input id="pin" type="password" inputmode="numeric" maxlength="4" placeholder="Enter PIN" autocomplete="off"><button class="icon-btn" onclick="clearPin()">⌫</button></div>
+<div class="keypad">
+<button class="key" onclick="tapPin('1')">1</button><button class="key" onclick="tapPin('2')">2</button><button class="key" onclick="tapPin('3')">3</button>
+<button class="key" onclick="tapPin('4')">4</button><button class="key" onclick="tapPin('5')">5</button><button class="key" onclick="tapPin('6')">6</button>
+<button class="key" onclick="tapPin('7')">7</button><button class="key" onclick="tapPin('8')">8</button><button class="key" onclick="tapPin('9')">9</button>
+<button class="key" onclick="backspacePin()">←</button><button class="key" onclick="tapPin('0')">0</button><button class="key" onclick="login()">✓</button>
 </div>
+<button class="btn full" style="margin-top:14px" onclick="login()">Login</button>
+</div>
+</section>
+
+<main id="app" class="app hidden">
+<header class="header">
+<div class="logo-box-header"><img class="logo-img" src="data:image/svg+xml;charset=UTF-8,%3Csvg%20viewBox%3D%220%200%20280%20245%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20aria-label%3D%22CleanOps%20Logo%22%3E%0A%3Cdefs%3E%0A%3ClinearGradient%20id%3D%22g1%22%20x1%3D%220%22%20x2%3D%221%22%20y1%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%236fbe44%22/%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%230d7a4a%22/%3E%3C/linearGradient%3E%0A%3ClinearGradient%20id%3D%22g2%22%20x1%3D%220%22%20x2%3D%221%22%20y1%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%2316a05d%22/%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%232b76b9%22/%3E%3C/linearGradient%3E%0A%3C/defs%3E%0A%3Cpath%20d%3D%22M55%2098%20L138%2035%20L225%2098%22%20fill%3D%22none%22%20stroke%3D%22url%28%23g1%29%22%20stroke-width%3D%2215%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22/%3E%0A%3Cpath%20d%3D%22M74%20100%20V168%20H118%20V122%20H158%20V168%20H204%20V100%22%20fill%3D%22none%22%20stroke%3D%22%230e7848%22%20stroke-width%3D%2213%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22/%3E%0A%3Cpath%20d%3D%22M95%20107%20L137%20151%20L211%2062%22%20fill%3D%22none%22%20stroke%3D%22url%28%23g2%29%22%20stroke-width%3D%2222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22/%3E%0A%3Crect%20x%3D%22139%22%20y%3D%2276%22%20width%3D%2213%22%20height%3D%2213%22%20fill%3D%22%230e7848%22/%3E%3Crect%20x%3D%22156%22%20y%3D%2276%22%20width%3D%2213%22%20height%3D%2213%22%20fill%3D%22%230e7848%22/%3E%3Crect%20x%3D%22139%22%20y%3D%2293%22%20width%3D%2213%22%20height%3D%2213%22%20fill%3D%22%230e7848%22/%3E%3Crect%20x%3D%22156%22%20y%3D%2293%22%20width%3D%2213%22%20height%3D%2213%22%20fill%3D%22%230e7848%22/%3E%0A%3Cpath%20d%3D%22M91%2030%20l5%2013%2013%205-13%205-5%2013-5-13-13-5%2013-5z%22%20fill%3D%22%23f6d23f%22/%3E%3Cpath%20d%3D%22M211%2020%20l4%2010%2010%204-10%204-4%2010-4-10-10-4%2010-4z%22%20fill%3D%22%23f6d23f%22/%3E%0A%3Ctext%20x%3D%22140%22%20y%3D%22213%22%20text-anchor%3D%22middle%22%20font-size%3D%2247%22%20font-weight%3D%22800%22%20font-family%3D%22Arial%22%3E%3Ctspan%20fill%3D%22%230e7848%22%3EClean%3C/tspan%3E%3Ctspan%20fill%3D%22%232b76b9%22%3EOps%3C/tspan%3E%3C/text%3E%0A%3Ctext%20x%3D%22140%22%20y%3D%22238%22%20text-anchor%3D%22middle%22%20font-size%3D%2216%22%20font-weight%3D%22700%22%20fill%3D%22%235e6e66%22%20font-family%3D%22Arial%22%3EHospitality%20Management%3C/text%3E%0A%3C/svg%3E" alt="CleanOps logo"></div>
+<div class="brand"><h1>Karma Tara Residency</h1><div class="powered">Powered by CleanOps</div><div id="dateTime" class="datetime"></div></div>
+<div class="userbox"><div id="userPill" class="user-pill"></div><button class="btn secondary full" onclick="logout()">Logout</button></div>
+</header>
+<nav id="tabs" class="tabs"></nav>
+<section id="content"></section>
+<div class="footer">🏠 Karma Tara Residency · Powered by CleanOps · V7.3.1.2</div>
+</main>
+<div id="toast" class="toast"></div>
+
 <script>
-const rooms=['Everest','Kanchenjunga','Lhotse','Makalu','Cho Oyu','Dhaulagiri','Manaslu','Annapurna','AmaDablam','Lobby','Staircase','Rooftop'];
-const checklist=['Bed Linen','Quilt Cover','Pillow Cover','Towels','Kitchen','Bathroom','Living Room','Overall Cleaned','Lights','TV','AC','Plumbing'];
-let state={staff:'',room:'',category:'Suite',status:'Cleaned',online:true,photo:false,entries:JSON.parse(localStorage.getItem('cleanops_v8_entries')||'[]')};
-function $(id){return document.getElementById(id)}
-function now(){return new Date().toLocaleString()}
-function saveLocal(){localStorage.setItem('cleanops_v8_entries',JSON.stringify(state.entries));updateCounts();renderLog();}
-function go(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));$(id).classList.add('active');document.querySelectorAll('.navbtn').forEach(b=>b.classList.remove('active'));[...document.querySelectorAll('.navbtn')].find(b=>b.textContent.toLowerCase().includes(id==='home'?'home':id==='scan'?'scan':id==='sync'?'sync':'report'))?.classList.add('active'); if(id==='report')buildReport();}
-function login(){let pin=$('pin').value.trim();if(pin.length<4){alert('Please enter 4-digit PIN for testing.');return}state.staff=$('staff').value;$('shiftInfo').textContent=`${state.staff} · Shift started ${now()}`;$('nav').classList.remove('hidden');renderRooms();renderScanRooms();go('home');}
-function renderRooms(){let html=rooms.map(r=>{let e=[...state.entries].reverse().find(x=>x.room===r);let cls=e?e.status==='Issue'?'issue':e.status==='Task'?'task':'done':'';let label=e?e.status:'Pending';return `<button class="room" onclick="openRoom('${r}')"><strong>${r}</strong><span class="badge ${cls}">${label}</span></button>`}).join('');$('roomList').innerHTML=html;}
-function renderScanRooms(){$('scanRooms').innerHTML=rooms.map(r=>`<button class="btn secondary" onclick="openRoom('${r}')">${r}</button>`).join('')}
-function quickRoomPrompt(){let r=prompt('Enter room/common area name:', 'Everest'); if(r)openRoom(r)}
-function openRoom(r){state.room=r;state.category='Suite';state.status='Cleaned';state.photo=false;$('workTitle').textContent=r;document.querySelectorAll('.cat,.status').forEach(b=>b.classList.remove('selected'));renderChecks();go('work');}
-function setCategory(c){state.category=c;document.querySelectorAll('.cat').forEach(b=>b.classList.toggle('selected',b.textContent.includes(c)));}
-function setStatus(s){state.status=s;document.querySelectorAll('.status').forEach(b=>b.classList.toggle('selected',b.textContent.includes(s)));}
-function renderChecks(){$('checks').innerHTML=checklist.map(c=>`<button class="check" onclick="this.classList.toggle('active')">${c}</button>`).join('')}
-function fakePhoto(){state.photo=true;alert('Photo proof marked for prototype. Real version will open camera.');}
-function saveEntry(){let checked=[...document.querySelectorAll('.check.active')].map(x=>x.textContent);let entry={id:Date.now(),time:now(),staff:state.staff,room:state.room,category:state.category,status:state.status,checks:checked,note:$('note').value.trim(),photo:state.photo,synced:state.online};state.entries.push(entry);$('note').value='';saveLocal();renderRooms();$('queuePill').textContent=`${state.entries.filter(e=>!e.synced).length} queued`;alert(state.online?'Entry saved and synced.':'Entry saved offline queue.');go('home');}
-function updateCounts(){let today=state.entries; $('doneCount').textContent=today.filter(e=>e.status==='Cleaned'||e.status==='Inspect').length; $('issueCount').textContent=today.filter(e=>e.status==='Issue').length; $('taskCount').textContent=today.filter(e=>e.status==='Task').length; $('queuePill').textContent=`${today.filter(e=>!e.synced).length} queued`;}
-function toggleNetwork(){state.online=!state.online;$('netPill').textContent=state.online?'Local WiFi':'Offline';$('netPill').className='pill '+(state.online?'ok':'warn');$('dot').className='syncDot '+(state.online?'':'off');$('syncText').textContent=state.online?'Connected to local WiFi mode.':'Offline mode: entries will queue on device.';}
-function syncNow(){if(!state.online){alert('Device is offline. Connect to local WiFi first.');return}state.entries=state.entries.map(e=>({...e,synced:true}));saveLocal();alert('All queued entries synced to local dashboard prototype.');}
-function renderLog(){let lines=state.entries.slice().reverse().map(e=>`${e.time} · ${e.staff} · ${e.room} · ${e.status}${e.synced?' · synced':' · queued'}${e.note?'\nNote: '+e.note:''}`).join('\n\n')||'No activity yet.';$('log').textContent=lines;}
-function buildReport(){let lines=['CLEANOPS DAILY REPORT','Karma Tara Residency',now(),''];state.entries.forEach(e=>lines.push(`${e.time} | ${e.staff} | ${e.room} | ${e.category} | ${e.status}${e.checks.length?' | '+e.checks.join(', '):''}${e.note?' | Note: '+e.note:''}${e.photo?' | Photo: Yes':''}`));$('reportBox').textContent=lines.join('\n')||'No report data.';}
-function shareWhatsApp(){buildReport();let text=encodeURIComponent($('reportBox').textContent);window.open(`https://wa.me/?text=${text}`,'_blank');}
-function showAdmin(){$('adminModal').classList.add('show');$('adminPin').focus();}
-function closeAdmin(){$('adminModal').classList.remove('show');$('adminPanel').classList.add('hidden');$('adminPin').value='';}
-function adminUnlock(){if($('adminPin').value==='9999'){$('adminPanel').classList.remove('hidden')}else alert('Wrong admin PIN. Demo PIN is 9999.');}
-function endShift(){if(confirm('End shift and return to login?')){closeAdmin();$('nav').classList.add('hidden');go('login');}}
-function exportData(){let blob=new Blob([JSON.stringify(state.entries,null,2)],{type:'application/json'});let a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='cleanops-v8-local-data.json';a.click();}
-window.addEventListener('load',()=>{updateCounts();renderLog();});
-document.addEventListener('keydown',e=>{if(e.key==='Escape')showAdmin();});
+const defaultUsers=[
+  {name:"Sonam",role:"Admin",pin:"1234"},
+  {name:"Amar",role:"Staff",pin:"1111"},
+  {name:"Kul Bdr.",role:"Staff",pin:"2222"},
+  {name:"Raman",role:"Supervisor",pin:"3333"}
+];
+let users=JSON.parse(localStorage.getItem("cleanops_v7312_users")||JSON.stringify(defaultUsers));
+const defaultRooms=["Everest","Kanchenjunga","Lhotse","Makalu","Cho Oyu","Dhaulagiri","Manaslu","Annapurna","AmaDablam"];
+let rooms=JSON.parse(localStorage.getItem("cleanops_v7312_rooms")||JSON.stringify(defaultRooms));
+const defaultAreas=["Lobby","Reception","Rooftop","Stairway","Parking","Terrace","Common Bathroom"];
+let areas=JSON.parse(localStorage.getItem("cleanops_v7312_areas")||JSON.stringify(defaultAreas));
+const defaultSuiteTasks=["Change Bed Linen","Change Quilt Cover","Change Pillow Cover","Change Towels","Clean Kitchen","Clean Bathroom","Clean Living Room","Overall Cleaned"];
+const defaultSuiteIssues=["Lights","TV","AC","Plumbing","Kitchen","Bathroom","Furniture","Other"];
+const defaultAreaTasks=["Lobby Cleaning","Reception Cleaning","Rooftop Cleaning","Stairway Cleaning","Parking Cleaning","Terrace Cleaning","Garbage Collection"];
+const defaultAreaIssues=["Lighting","Water Leakage","Furniture Damage","Waste Overflow","Floor Damage","Safety Hazard","Other"];
+let suiteTasks=JSON.parse(localStorage.getItem("cleanops_v7312_suite_tasks")||JSON.stringify(defaultSuiteTasks));
+let suiteIssues=JSON.parse(localStorage.getItem("cleanops_v7312_suite_issues")||JSON.stringify(defaultSuiteIssues));
+let areaTasks=JSON.parse(localStorage.getItem("cleanops_v7312_area_tasks")||JSON.stringify(defaultAreaTasks));
+let areaIssues=JSON.parse(localStorage.getItem("cleanops_v7312_area_issues")||JSON.stringify(defaultAreaIssues));
+let entries=JSON.parse(localStorage.getItem("cleanops_v7312_entries")||"[]");
+let currentUser=null,currentView="work",entryType="Suite Room";
+let selectedMode=null,selectedStatus=[],selectedTask=[],selectedIssues=[],dropdownOpen=null;
+
+function saveEntries(){
+ localStorage.setItem("cleanops_v7312_entries",JSON.stringify(entries));
+ localStorage.setItem("cleanops_v7312_rooms",JSON.stringify(rooms));
+ localStorage.setItem("cleanops_v7312_areas",JSON.stringify(areas));
+ localStorage.setItem("cleanops_v7312_users",JSON.stringify(users));
+ localStorage.setItem("cleanops_v7312_suite_tasks",JSON.stringify(suiteTasks));
+ localStorage.setItem("cleanops_v7312_suite_issues",JSON.stringify(suiteIssues));
+ localStorage.setItem("cleanops_v7312_area_tasks",JSON.stringify(areaTasks));
+ localStorage.setItem("cleanops_v7312_area_issues",JSON.stringify(areaIssues));
+}
+function fillUsers(){loginUser.innerHTML=users.map((u,i)=>`<option value="${i}">${u.name} — ${u.role}</option>`).join("")}
+function showToast(m){toast.textContent=m;toast.style.display="block";setTimeout(()=>toast.style.display="none",1800)}
+function tapPin(n){if(pin.value.length<4)pin.value+=n}
+function backspacePin(){pin.value=pin.value.slice(0,-1)}
+function clearPin(){pin.value=""}
+function login(){const u=users[loginUser.value];if(!u||pin.value!==u.pin){showToast("Incorrect PIN");return}currentUser=u;sessionStorage.setItem("cleanops_v7312_user",JSON.stringify(u));pin.value="";startApp()}
+function logout(){sessionStorage.removeItem("cleanops_v7312_user");currentUser=null;app.classList.add("hidden");loginScreen.classList.remove("hidden")}
+function startApp(){loginScreen.classList.add("hidden");app.classList.remove("hidden");userPill.textContent=`${currentUser.name} — ${currentUser.role}`;currentView=currentUser.role==="Staff"?"work":"dashboard";tick();renderTabs();renderContent()}
+function tick(){if(document.getElementById("dateTime")) dateTime.textContent=new Date().toLocaleDateString()+" | "+new Date().toLocaleTimeString()}
+setInterval(tick,1000);
+function todayEntries(){const d=new Date().toDateString();return entries.filter(e=>new Date(e.time).toDateString()===d)}
+function hasIssue(e){return e.status.includes("Issue")||e.issues.length>0}
+function renderTabs(){
+ if(currentUser.role==="Staff"){tabs.innerHTML="";tabs.classList.add("hidden");return}
+ tabs.classList.remove("hidden");
+ const list=currentUser.role==="Supervisor"?[["dashboard","Dashboard"],["save","Save"]]:[["dashboard","Dashboard"],["staff","Staff & PINs"],["setup","Setup"],["save","Save"]];
+ tabs.innerHTML=list.map(t=>`<button class="tab ${currentView===t[0]?'active':''}" onclick="go('${t[0]}')">${t[1]}</button>`).join("")
+}
+function go(v){currentView=v;renderTabs();renderContent()}
+function renderContent(){
+ if(currentView==="work") return renderWork();
+ if(currentView==="dashboard") return renderDashboard();
+ if(currentView==="reports") return renderReports(entries,"Live Operational Reports");
+ if(currentView==="issues") return renderReports(entries.filter(hasIssue),"Issues");
+ if(currentView==="staff") return renderStaff();
+ if(currentView==="setup") return renderSetup();
+ if(currentView==="save") return renderSave();
+}
+function resetEntry(){selectedMode=null;selectedStatus=[];selectedTask=[];selectedIssues=[];dropdownOpen=null}
+function toggle(arr,val){const i=arr.indexOf(val);if(i>=0)arr.splice(i,1);else arr.push(val)}
+
+function getCurrentTasks(){return entryType==="Suite Room"?suiteTasks:areaTasks}
+function getCurrentIssues(){return entryType==="Suite Room"?suiteIssues:areaIssues}
+function setStatus(mode){
+ selectedMode=mode;
+ selectedStatus=[mode];
+ dropdownOpen=mode.toLowerCase();
+ renderWork();
+}
+function stableToggleTask(item){
+ const i=selectedTask.indexOf(item);
+ if(i>=0) selectedTask.splice(i,1); else selectedTask.push(item);
+ renderWork();
+}
+function stableToggleIssue(item){
+ const i=selectedIssues.indexOf(item);
+ if(i>=0) selectedIssues.splice(i,1); else selectedIssues.push(item);
+ renderWork();
+}
+function renderStableChecklist(title,mode,items,selected){
+ const open=dropdownOpen===mode;
+ const count=selected.length;
+ const body=open?`<div class="details-body"><div class="checks">${items.map(item=>{
+   const on=selected.includes(item)?"on":"";
+   const safe=item.replace(/'/g,"&#39;");
+   return `<button type="button" class="check ${on}" onclick="${mode==='task'?'stableToggleTask':'stableToggleIssue'}('${safe}')">${item}</button>`;
+ }).join("")}</div></div>`:"";
+ return `<div class="details-box">
+   <button type="button" class="details-head" onclick="dropdownOpen=dropdownOpen==='${mode}'?null:'${mode}';renderWork()">
+     <span>${title}</span><span class="count">${count} selected ${open?'▲':'▼'}</span>
+   </button>${body}</div>`;
+}
+function renderWork(){
+ const list=entryType==="Suite Room"?rooms:areas;
+ const locationLabel=entryType==="Suite Room"?"Suite Name":"Common Area";
+ content.innerHTML=`<div class="card">
+ <h2>Work Entry</h2><p class="small">Fast staff reporting. Select location, Task or Issue, checklist, then Submit.</p>
+ <div class="segment">
+   <button type="button" class="${entryType==='Suite Room'?'active':''}" onclick="entryType='Suite Room';resetEntry();renderWork()">Suite Room</button>
+   <button type="button" class="${entryType==='Common Area'?'active':''}" onclick="entryType='Common Area';resetEntry();renderWork()">Common Area</button>
+ </div>
+ <label>${locationLabel}</label><select id="locationSelect">${list.map(x=>`<option>${x}</option>`).join("")}</select>
+ <label>Status</label>
+ <div class="status-row">
+   <button type="button" class="status ${selectedMode==='Task'?'on':''}" onclick="setStatus('Task')">Task</button>
+   <button type="button" class="status ${selectedMode==='Issue'?'on':''}" onclick="setStatus('Issue')">Issue</button>
+ </div>
+ ${selectedMode==='Task'?renderStableChecklist("Task Checklist","task",getCurrentTasks(),selectedTask):""}
+ ${selectedMode==='Issue'?renderStableChecklist("Issue Checklist","issue",getCurrentIssues(),selectedIssues):""}
+ <label>Photo</label>
+ <div class="photo-row"><label class="photo-label" for="photoInput">📷 Photo</label><button type="button" class="btn secondary smallbtn" onclick="clearPhoto()">Remove</button></div>
+ <input id="photoInput" class="file-input" type="file" accept="image/*" capture="environment" onchange="previewPhoto(event)">
+ <img id="photoPreview" class="photo-preview hidden" alt="Issue photo preview">
+ <label>Note</label><textarea id="note" rows="4" placeholder="Optional note"></textarea>
+ <button type="button" class="btn full" style="margin-top:16px" onclick="submitEntry()">Submit</button>
+ </div>`;
+}
+function previewPhoto(event){
+ const file=event.target.files && event.target.files[0];
+ const img=document.getElementById("photoPreview");
+ if(!file||!img)return;
+ const reader=new FileReader();
+ reader.onload=e=>{img.src=e.target.result;img.classList.remove("hidden");};
+ reader.readAsDataURL(file);
+}
+function clearPhoto(){
+ const el=document.getElementById("photoInput");
+ const img=document.getElementById("photoPreview");
+ if(el) el.value="";
+ if(img){img.src="";img.classList.add("hidden");}
+}
+function readPhoto(){
+ return new Promise(resolve=>{
+  const el=document.getElementById("photoInput");
+  const file=el && el.files && el.files[0];
+  if(!file){resolve("");return}
+  const reader=new FileReader();
+  reader.onload=e=>resolve(e.target.result);
+  reader.readAsDataURL(file);
+ });
+}
+async function submitEntry(){
+ const loc=document.getElementById("locationSelect").value;
+ const note=document.getElementById("note").value.trim();
+ if(!selectedMode){showToast("Please select Task or Issue");return}
+ if(selectedMode==="Task" && selectedTask.length===0){showToast("Please select at least one task");return}
+ if(selectedMode==="Issue" && selectedIssues.length===0){showToast("Please select at least one issue");return}
+ const photo=await readPhoto();
+ entries.push({id:Date.now(),time:new Date().toISOString(),staff:currentUser.name,role:currentUser.role,type:entryType,location:loc,status:[selectedMode],tasks:[...selectedTask],issues:[...selectedIssues],note,photo});
+ saveEntries(); resetEntry(); showToast("Submitted to Dashboard"); renderWork();
+}
+function renderDashboard(){
+ const today=todayEntries(),issues=entries.filter(hasIssue),active=new Set(today.map(e=>e.staff)).size;
+ content.innerHTML=`<div class="card"><h2>${currentUser.role} Dashboard</h2><p class="small">Management live overview after staff submission.</p><div class="dashboard-grid"><div class="metric">Today Entries<strong>${today.length}</strong></div><div class="metric">Open Issues<strong>${issues.length}</strong></div><div class="metric">Active Staff<strong>${active}</strong></div></div></div>${entryList(today.slice(-5).reverse(),"Latest Today")}`
+}
+function renderReports(list,title){content.innerHTML=`<div class="card"><h2>${title}</h2><p class="small">${list.length} report(s)</p></div>${entryList(list.slice().reverse(),"")}`}
+function entryList(list,title){if(!list.length)return `<div class="card"><h3>${title||"Reports"}</h3><p class="small">No entries yet.</p></div>`;return `<div class="card">${title?`<h3>${title}</h3>`:""}${list.map(e=>`<div class="entry ${hasIssue(e)?'issue':''}"><div class="entry-title">${e.location} <span class="small">(${e.type})</span></div><div class="small">Staff: ${e.staff} · ${new Date(e.time).toLocaleString()}</div><div>${e.status.map(s=>`<span class="badge ${s==='Issue'?'issue':''}">${s}</span>`).join("")}</div>${e.tasks.length?`<p><b>Tasks:</b> ${e.tasks.join(", ")}</p>`:""}${e.issues.length?`<p><b>Issues:</b> ${e.issues.join(", ")}</p>`:""}${e.note?`<p><b>Note:</b> ${e.note}</p>`:""}${e.photo?`<img class="photo-preview" src="${e.photo}" alt="Attached issue photo">`:""}</div>`).join("")}</div>`}
+function renderStaff(){
+ content.innerHTML=`<div class="card"><h2>Staff & PIN Management</h2><p class="small">Admin-only. Add, edit, remove staff and manage PINs.</p>
+ <div class="add-row">
+   <input id="staffNameInput" placeholder="Staff name">
+   <select id="staffRoleInput"><option>Staff</option><option>Supervisor</option><option>Admin</option></select>
+   <input id="staffPinInput" placeholder="4-digit PIN" maxlength="4" inputmode="numeric">
+   <button class="btn smallbtn" onclick="addStaff()">Add Staff</button>
+ </div>
+ <div class="staff-list">${users.map((u,i)=>`<div class="staff-card"><div><strong>${u.name}</strong><div class="small">${u.role}</div></div><div class="row"><div class="pin-badge">PIN ${u.pin}</div><button class="btn secondary smallbtn" onclick="editStaff(${i})">Edit</button><button class="btn danger smallbtn" onclick="deleteStaff(${i})">Remove</button></div></div>`).join("")}</div></div>`;
+}
+function addStaff(){
+ const name=staffNameInput.value.trim(), role=staffRoleInput.value, pin=staffPinInput.value.trim();
+ if(!name||!pin){showToast("Please enter staff name and PIN");return}
+ if(!/^[0-9]{4}$/.test(pin)){showToast("PIN must be 4 digits");return}
+ users.push({name,role,pin});saveEntries();
+function renderSave(){
+ content.innerHTML=`<div class="card"><h2>Save / Backup</h2><p class="small">Backup and restore CleanOps data for safe testing and continuity.</p>
+ <div class="row" style="margin-top:12px">
+   <button class="btn" onclick="backupJSON()">Backup JSON</button>
+   <button class="btn secondary" onclick="restoreInput.click()">Restore JSON</button>
+   <button class="btn warn" onclick="printDashboard()">Print / Save PDF</button>
+ </div>
+ <input id="restoreInput" class="hidden" type="file" accept="application/json,.json" onchange="restoreJSON(event)">
+ </div>`;
+}
+function collectData(){
+ return {version:"CleanOps V7.3.1.2",property:"Karma Tara Residency",users,rooms,areas,suiteTasks,suiteIssues,areaTasks,areaIssues,entries,backupTime:new Date().toISOString()};
+}
+function backupJSON(){
+ const blob=new Blob([JSON.stringify(collectData(),null,2)],{type:"application/json"});
+ const a=document.createElement("a");
+ a.href=URL.createObjectURL(blob);
+ a.download="cleanops_v7312_backup_"+new Date().toISOString().slice(0,10)+".json";
+ document.body.appendChild(a);a.click();a.remove();
+ showToast("Backup JSON downloaded");
+}
+function restoreJSON(event){
+ const file=event.target.files&&event.target.files[0]; if(!file)return;
+ const reader=new FileReader();
+ reader.onload=e=>{
+  try{
+   const data=JSON.parse(e.target.result);
+   if(data.users) users=data.users;
+   if(data.rooms) rooms=data.rooms;
+   if(data.areas) areas=data.areas;
+   if(data.suiteTasks) suiteTasks=data.suiteTasks;
+   if(data.suiteIssues) suiteIssues=data.suiteIssues;
+   if(data.areaTasks) areaTasks=data.areaTasks;
+   if(data.areaIssues) areaIssues=data.areaIssues;
+   if(data.taskItems && !data.suiteTasks) suiteTasks=data.taskItems;
+   if(data.issueTasks && !data.suiteIssues) suiteIssues=data.issueTasks;
+   if(data.entries) entries=data.entries;
+   saveEntries();fillUsers();showToast("Backup restored");go("dashboard");
+  }catch(err){showToast("Invalid backup file")}
+ };
+ reader.readAsText(file); event.target.value="";
+}
+function printDashboard(){go("dashboard");setTimeout(()=>window.print(),200)}
+
+fillUsers();renderStaff();
+}
+function editStaff(i){
+ const u=users[i];
+ const name=prompt("Staff name",u.name); if(!name||!name.trim())return;
+ const role=prompt("Role: Admin, Supervisor, Staff",u.role); if(!role||!role.trim())return;
+ const pin=prompt("4-digit PIN",u.pin); if(!pin||!/^[0-9]{4}$/.test(pin)){showToast("PIN must be 4 digits");return}
+ users[i]={name:name.trim(),role:role.trim(),pin};saveEntries();
+function renderSave(){
+ content.innerHTML=`<div class="card"><h2>Save / Backup</h2><p class="small">Backup and restore CleanOps data for safe testing and continuity.</p>
+ <div class="row" style="margin-top:12px">
+   <button class="btn" onclick="backupJSON()">Backup JSON</button>
+   <button class="btn secondary" onclick="restoreInput.click()">Restore JSON</button>
+   <button class="btn warn" onclick="printDashboard()">Print / Save PDF</button>
+ </div>
+ <input id="restoreInput" class="hidden" type="file" accept="application/json,.json" onchange="restoreJSON(event)">
+ </div>`;
+}
+function collectData(){
+ return {version:"CleanOps V7.3.1.2",property:"Karma Tara Residency",users,rooms,areas,suiteTasks,suiteIssues,areaTasks,areaIssues,entries,backupTime:new Date().toISOString()};
+}
+function backupJSON(){
+ const blob=new Blob([JSON.stringify(collectData(),null,2)],{type:"application/json"});
+ const a=document.createElement("a");
+ a.href=URL.createObjectURL(blob);
+ a.download="cleanops_v7312_backup_"+new Date().toISOString().slice(0,10)+".json";
+ document.body.appendChild(a);a.click();a.remove();
+ showToast("Backup JSON downloaded");
+}
+function restoreJSON(event){
+ const file=event.target.files&&event.target.files[0]; if(!file)return;
+ const reader=new FileReader();
+ reader.onload=e=>{
+  try{
+   const data=JSON.parse(e.target.result);
+   if(data.users) users=data.users;
+   if(data.rooms) rooms=data.rooms;
+   if(data.areas) areas=data.areas;
+   if(data.suiteTasks) suiteTasks=data.suiteTasks;
+   if(data.suiteIssues) suiteIssues=data.suiteIssues;
+   if(data.areaTasks) areaTasks=data.areaTasks;
+   if(data.areaIssues) areaIssues=data.areaIssues;
+   if(data.taskItems && !data.suiteTasks) suiteTasks=data.taskItems;
+   if(data.issueTasks && !data.suiteIssues) suiteIssues=data.issueTasks;
+   if(data.entries) entries=data.entries;
+   saveEntries();fillUsers();showToast("Backup restored");go("dashboard");
+  }catch(err){showToast("Invalid backup file")}
+ };
+ reader.readAsText(file); event.target.value="";
+}
+function printDashboard(){go("dashboard");setTimeout(()=>window.print(),200)}
+
+fillUsers();renderStaff();
+}
+function deleteStaff(i){
+ if(users.length<=1){showToast("At least one user required");return}
+ if(confirm("Remove this staff?")){users.splice(i,1);saveEntries();
+function renderSave(){
+ content.innerHTML=`<div class="card"><h2>Save / Backup</h2><p class="small">Backup and restore CleanOps data for safe testing and continuity.</p>
+ <div class="row" style="margin-top:12px">
+   <button class="btn" onclick="backupJSON()">Backup JSON</button>
+   <button class="btn secondary" onclick="restoreInput.click()">Restore JSON</button>
+   <button class="btn warn" onclick="printDashboard()">Print / Save PDF</button>
+ </div>
+ <input id="restoreInput" class="hidden" type="file" accept="application/json,.json" onchange="restoreJSON(event)">
+ </div>`;
+}
+function collectData(){
+ return {version:"CleanOps V7.3.1.2",property:"Karma Tara Residency",users,rooms,areas,suiteTasks,suiteIssues,areaTasks,areaIssues,entries,backupTime:new Date().toISOString()};
+}
+function backupJSON(){
+ const blob=new Blob([JSON.stringify(collectData(),null,2)],{type:"application/json"});
+ const a=document.createElement("a");
+ a.href=URL.createObjectURL(blob);
+ a.download="cleanops_v7312_backup_"+new Date().toISOString().slice(0,10)+".json";
+ document.body.appendChild(a);a.click();a.remove();
+ showToast("Backup JSON downloaded");
+}
+function restoreJSON(event){
+ const file=event.target.files&&event.target.files[0]; if(!file)return;
+ const reader=new FileReader();
+ reader.onload=e=>{
+  try{
+   const data=JSON.parse(e.target.result);
+   if(data.users) users=data.users;
+   if(data.rooms) rooms=data.rooms;
+   if(data.areas) areas=data.areas;
+   if(data.suiteTasks) suiteTasks=data.suiteTasks;
+   if(data.suiteIssues) suiteIssues=data.suiteIssues;
+   if(data.areaTasks) areaTasks=data.areaTasks;
+   if(data.areaIssues) areaIssues=data.areaIssues;
+   if(data.taskItems && !data.suiteTasks) suiteTasks=data.taskItems;
+   if(data.issueTasks && !data.suiteIssues) suiteIssues=data.issueTasks;
+   if(data.entries) entries=data.entries;
+   saveEntries();fillUsers();showToast("Backup restored");go("dashboard");
+  }catch(err){showToast("Invalid backup file")}
+ };
+ reader.readAsText(file); event.target.value="";
+}
+function printDashboard(){go("dashboard");setTimeout(()=>window.print(),200)}
+
+fillUsers();renderStaff();}
+}
+function renderSetup(){
+ content.innerHTML=`<div class="card">
+ <h2>Setup</h2>
+ <p class="small">Admin manages rooms, areas, and separate task/issue lists for Suite Rooms and Common Areas. Staff only reports work.</p>
+ <div class="setup-grid">
+   <div>${setupBlock("Suite Rooms","rooms")}</div>
+   <div>${setupBlock("Common Areas","areas")}</div>
+   <div>${setupBlock("Suite Room Tasks","suiteTasks")}</div>
+   <div>${setupBlock("Suite Room Issues","suiteIssues")}</div>
+   <div>${setupBlock("Common Area Tasks","areaTasks")}</div>
+   <div>${setupBlock("Common Area Issues","areaIssues")}</div>
+ </div>
+ </div>`;
+}
+function setupBlock(title,type){
+ const list=getSetupList(type);
+ const label=type==="rooms"?"suite room":type==="areas"?"common area":type.includes("Tasks")?"task":"issue";
+ return `<h3>${title}</h3>
+ <div class="add-row">
+   <input id="${type}Input" placeholder="Add new ${label}">
+   <button class="btn smallbtn" onclick="addItem('${type}')">Add</button>
+ </div>
+ <div class="setup-list">
+ ${list.map((x,i)=>`<div class="setup-card"><strong>${x}</strong><div class="row"><button class="btn secondary smallbtn" onclick="editItem('${type}',${i})">Edit</button><button class="btn danger smallbtn" onclick="deleteItem('${type}',${i})">Delete</button></div></div>`).join("")}
+ </div>`;
+}
+function getSetupList(type){
+ if(type==="rooms") return rooms;
+ if(type==="areas") return areas;
+ if(type==="suiteTasks") return suiteTasks;
+ if(type==="suiteIssues") return suiteIssues;
+ if(type==="areaTasks") return areaTasks;
+ return areaIssues;
+}
+function addItem(type){
+ const el=document.getElementById(type+"Input");
+ const val=el.value.trim();
+ if(!val){showToast("Please enter name");return}
+ const list=getSetupList(type);
+ if(list.some(x=>x.toLowerCase()===val.toLowerCase())){showToast("Already exists");return}
+ list.push(val);saveEntries();renderSetup();
+}
+function editItem(type,i){
+ const list=getSetupList(type);
+ const val=prompt("Edit name",list[i]);
+ if(!val||!val.trim())return;
+ list[i]=val.trim();saveEntries();renderSetup();
+}
+function deleteItem(type,i){
+ const list=getSetupList(type);
+ if(confirm("Delete this item?")){list.splice(i,1);saveEntries();renderSetup();}
+}
+
+
+function renderSave(){
+ content.innerHTML=`<div class="card"><h2>Save / Backup</h2><p class="small">Backup and restore CleanOps data for safe testing and continuity.</p>
+ <div class="row" style="margin-top:12px">
+   <button class="btn" onclick="backupJSON()">Backup JSON</button>
+   <button class="btn secondary" onclick="restoreInput.click()">Restore JSON</button>
+   <button class="btn warn" onclick="printDashboard()">Print / Save PDF</button>
+ </div>
+ <input id="restoreInput" class="hidden" type="file" accept="application/json,.json" onchange="restoreJSON(event)">
+ </div>`;
+}
+function collectData(){
+ return {version:"CleanOps V7.3.1.2",property:"Karma Tara Residency",users,rooms,areas,suiteTasks,suiteIssues,areaTasks,areaIssues,entries,backupTime:new Date().toISOString()};
+}
+function backupJSON(){
+ const blob=new Blob([JSON.stringify(collectData(),null,2)],{type:"application/json"});
+ const a=document.createElement("a");
+ a.href=URL.createObjectURL(blob);
+ a.download="cleanops_v7312_backup_"+new Date().toISOString().slice(0,10)+".json";
+ document.body.appendChild(a);a.click();a.remove();
+ showToast("Backup JSON downloaded");
+}
+function restoreJSON(event){
+ const file=event.target.files&&event.target.files[0]; if(!file)return;
+ const reader=new FileReader();
+ reader.onload=e=>{
+  try{
+   const data=JSON.parse(e.target.result);
+   if(data.users) users=data.users;
+   if(data.rooms) rooms=data.rooms;
+   if(data.areas) areas=data.areas;
+   if(data.suiteTasks) suiteTasks=data.suiteTasks;
+   if(data.suiteIssues) suiteIssues=data.suiteIssues;
+   if(data.areaTasks) areaTasks=data.areaTasks;
+   if(data.areaIssues) areaIssues=data.areaIssues;
+   if(data.taskItems && !data.suiteTasks) suiteTasks=data.taskItems;
+   if(data.issueTasks && !data.suiteIssues) suiteIssues=data.issueTasks;
+   if(data.entries) entries=data.entries;
+   saveEntries();fillUsers();showToast("Backup restored");go("dashboard");
+  }catch(err){showToast("Invalid backup file")}
+ };
+ reader.readAsText(file); event.target.value="";
+}
+function printDashboard(){go("dashboard");setTimeout(()=>window.print(),200)}
+
+fillUsers(); const saved=sessionStorage.getItem("cleanops_v7312_user"); if(saved){currentUser=JSON.parse(saved);startApp()}
 </script>
 </body>
 </html>
