@@ -1,5 +1,5 @@
-CleanOps V8.1.2 — Daily Workflow Management
+CleanOps V8.1.2.1 — Safe Daily Workflow Merge
 
-Built from V8.1.1 stabilization. Adds Admin Clear Today Data with backup warning, Staff View Today Report, daily date rollover refresh, report stability, and operational lifecycle refinement.
+Built from the stable V8.1.1 foundation. Adds Admin Clear Today Data with backup warning, Staff View Today Report, daily auto-reset view logic, and report stability while preserving workflow, layout, screen fit, and selection persistence.
 
-Deploy all files together to Vercel or any static host.
+Deploy the folder contents to Vercel.

@@ -1,5 +1,5 @@
 {
-  "name": "CleanOps V8.1.2",
+  "name": "CleanOps V8.1.2.1",
   "short_name": "CleanOps",
   "start_url": "./index.html",
   "scope": "./",
@@ -7,7 +7,7 @@
   "orientation": "portrait",
   "background_color": "#f7f3e8",
   "theme_color": "#16824f",
-  "description": "CleanOps V8.1.2 Daily Workflow Management",
+  "description": "CleanOps V8.1.2.1 Daily Workflow + Compact UI Stabilization",
   "icons": [
     {
       "src": "logo.svg",
