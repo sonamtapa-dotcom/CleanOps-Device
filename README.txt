@@ -1,4 +1,6 @@
-CleanOps V8.1 Device Operational Foundation
+CleanOps V8.1.1 — Selection Persistence + Compact UI Stabilization
 
-Deploy this folder to Vercel. Open the URL on Android Chrome and install as PWA.
-This build preserves V7.3.1.2 localStorage keys and core workflow while adding compact UI, navigation protection, kiosk-safe behavior, and fullscreen PWA files.
+Built on the locked V7.3.1.2 core foundation.
+Includes: room/common area selection persistence, form reset protection, compact admin dashboard cards, centered header, simplified login, removed Reports tab, Staff moved into Setup, PWA files, service worker, and kiosk-safe navigation behavior.
+
+Deploy the folder contents to Vercel.

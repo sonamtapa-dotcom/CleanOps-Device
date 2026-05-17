@@ -1,5 +1,5 @@
 {
-  "name": "CleanOps V8.1 Device Operational Foundation",
+  "name": "CleanOps V8.1.1",
   "short_name": "CleanOps",
   "start_url": "./index.html",
   "scope": "./",
@@ -7,7 +7,7 @@
   "orientation": "portrait",
   "background_color": "#f7f3e8",
   "theme_color": "#16824f",
-  "description": "CleanOps housekeeping operations PWA for dedicated device testing.",
+  "description": "CleanOps V8.1.1 Selection Persistence + Compact UI Stabilization",
   "icons": [
     {
       "src": "logo.svg",
