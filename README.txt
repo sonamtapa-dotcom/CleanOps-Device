@@ -1,6 +1,5 @@
-CleanOps V8.1.1 — Selection Persistence + Compact UI Stabilization
+CleanOps V8.1.2 — Daily Workflow Management
 
-Built on the locked V7.3.1.2 core foundation.
-Includes: room/common area selection persistence, form reset protection, compact admin dashboard cards, centered header, simplified login, removed Reports tab, Staff moved into Setup, PWA files, service worker, and kiosk-safe navigation behavior.
+Built from V8.1.1 stabilization. Adds Admin Clear Today Data with backup warning, Staff View Today Report, daily date rollover refresh, report stability, and operational lifecycle refinement.
 
-Deploy the folder contents to Vercel.
+Deploy all files together to Vercel or any static host.
